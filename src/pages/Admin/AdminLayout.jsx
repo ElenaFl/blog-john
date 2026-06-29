@@ -33,7 +33,7 @@ export const AdminLayout = () => {
       }
     };
     checkAuth();
-  }, [apiUrl, location.pathname]);
+  }, [apiUrl]);
 
   // Функция безопасного выхода со стиранием куки
   const handleLogout = async () => {
