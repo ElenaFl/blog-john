@@ -40,7 +40,8 @@ export const WorkDetails = () => {
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/works/${id}`);
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${apiUrl}/api/works/${id}`);
         if (!response.ok) throw Error("Ошибка загрузки");
         const data = await response.json();
         setWork(data);
@@ -69,7 +70,7 @@ export const WorkDetails = () => {
     }
   }, [isMainHovered, work]);
 
-  // управление воспроизведением видео в галерее 
+  // управление воспроизведением видео в галерее
   useEffect(() => {
     if (!galleryVideoRef.current) return;
 
@@ -308,7 +309,7 @@ export const WorkDetails = () => {
                     style={{
                       bottom: isMobile ? "12px" : "32px",
                       right: isMobile ? "12px" : "calc(16% + 20px)",
-                      cursor: "inherit"
+                      cursor: "inherit",
                     }}
                     title={isMuted ? "Включить звук" : "Выключить звук"}
                   >
@@ -401,7 +402,7 @@ export const WorkDetails = () => {
                 );
               }
 
-              // 3. Рендеринг ВИДЕО МАШИНА 
+              // 3. Рендеринг ВИДЕО МАШИНА
               if (item.type === "video") {
                 return (
                   <div
@@ -583,7 +584,7 @@ export const WorkDetails = () => {
                           style={{
                             bottom: "32px",
                             right: "calc(16% + 20px)",
-                            cursor: "inherit"
+                            cursor: "inherit",
                           }}
                           title={isMuted ? "Включить звук" : "Выключить звук"}
                         >

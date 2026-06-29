@@ -7,7 +7,7 @@ export const Posts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [checkBtnViewAll, setCheckBtnViewAll] = useState(false);
   const [dailyPosts, setDailyPosts] = useState([]);
-  
+
   const navigate = useNavigate();
 
   function handleBtnViewAll() {
@@ -18,7 +18,8 @@ export const Posts = () => {
     const fetchPosts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:5000/api/posts");
+        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${baseUrl}/api/posts`);
         if (!response.ok) {
           throw new Error("Ошибка загрузки данных с json-server");
         }
@@ -28,7 +29,9 @@ export const Posts = () => {
         if (data.length > 0) {
           const daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
           const startIndex = (daysSinceEpoch * 2) % data.length;
-          const dailyTwoPosts = data.concat(data).slice(startIndex, startIndex + 2);
+          const dailyTwoPosts = data
+            .concat(data)
+            .slice(startIndex, startIndex + 2);
           setDailyPosts(dailyTwoPosts);
         }
       } catch (error) {

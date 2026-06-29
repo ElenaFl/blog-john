@@ -11,7 +11,6 @@ import { PostDetails } from "./pages/PostDetails/PostDetails.jsx";
 import { WorkDetails } from "./pages/WorkDetails/WorkDetails.jsx";
 import { AdminLayout } from "./pages/Admin/AdminLayout.jsx";
 import { AdminForm } from "./pages/Admin/AdminForm.jsx";
-import { AdminLogin } from "./pages/Admin/AdminLogin.jsx";
 import { AdminPosts } from "./pages/Admin/AdminPosts.jsx";
 
 createRoot(document.getElementById("root")).render(

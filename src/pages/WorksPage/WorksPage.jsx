@@ -23,7 +23,8 @@ export const WorksPage = () => {
 
   useEffect(() => {
     const fetchWorks = async () => {
-      const response = await fetch(`http://localhost:5000/api/works`);
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/works`);
 
       if (!response.ok) {
         throw new Error("Ошибка загрузки данных");

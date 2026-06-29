@@ -61,7 +61,7 @@ export const Contact = () => {
     try {
       // ИСПРАВЛЕНО: Адрес берется динамически из .env (VITE_API_URL) вместо хардкода localhost
 
-      const apiUrl = "http://localhost:5000";
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
       const response = await fetch(`${apiUrl}/api/contact`, {
         method: "POST",
