@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+:root {
+  
+  --bg: #FBFBFA;      /* мягкий молочный шелк вместо стерильного белого */
+  --text: #222222;    /* бархатный матовый графит для основного текста */
+  --text-h: #1A1A1A;  /* мягкий глубокий уголь для всех заголовков */
+  --border: #EBEAE7;  /* мягкая линия границ */
+  --code-bg: #F5F4EE;
+  
+  /* цвет кнопки подписки */
+  --accent: #00A8CC;  
+  --accent-bg: rgba(0, 168, 204, 0.06);     /* полупрозрачная подсветка */
+  --accent-border: rgba(0, 168, 204, 0.3); /* рамки фокуса */
+  --social-bg: rgba(245, 244, 238, 0.5);
+  
+  /* тени для эффекта парения элементов */
+  --shadow:
+    rgba(0, 0, 0, 0.04) 0 10px 25px -3px, rgba(0, 0, 0, 0.01) 0 4px 10px -2px;
+
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+html {
+  /* резервирует место под полосу прокрутки, предотвращая прыжки разметки влево-вправо */
+  scrollbar-gutter: stable;
+}
+
+/* заголовки, мягкий угольный цвет */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-h);
+  letter-spacing: -0.02em;
+}
+
+/* =========================================================
+          СИСТЕМНЫЕ НАСТРОЙКИ ВИДЕО
+   ========================================================= */
+video::-webkit-media-controls-picture-in-picture-button {
+  display: none !important;
+}
+
+video {
+  pointer-events: none;
+}
+
+/* =========================================================
+                        АНИМАЦИИ
+   ========================================================= */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+/* выплывание формы из левого края */
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-right {
+  animation: slideRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* покачивание конвертика */
+@keyframes bounceHorizontal {
+  0%, 100% { transform: translateX(0) rotate(90deg); }
+  50% { transform: translateX(4px) rotate(90deg); }
+}
+
+.animate-bounce-horizontal {
+  animation: bounceHorizontal 2.2s ease-in-out infinite;
+}
+
+/* абзацы внутри статьи, отступ в 24 пикселя */
+.custom-article-text {
+  text-indent: 24px;
+}
+
+
+/* Мягкая маска для завуалирования надписи в углу видео */
+.video-corner-mask {
+  position: absolute;
+  bottom: 8px;
+  right: 16%;
+  width: 15%;
+  height: 16%;
+  background: linear-gradient(135deg, rgba(224, 130, 24, 0) 0%, rgba(224, 130, 24, 0) 65%, rgba(224, 130, 24, 0.4) 85%, rgba(224, 130, 24, 0.98) 100%);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+
+/* Базовый контейнер для летающего 3D курсора (куб/лотос) */
+.floating-3d-cursor {
+  position: absolute;
+  z-index: 50;
+  width: 60px;
+  height: 60px;
+  perspective: 600px;
+}
+
+/* Вращающееся 3D-ядро для геометрического лотоса */
+.lotus-3d-core {
+  position: relative;
+  width: 2rem; /* аналог w-8 (32px) */
+  height: 2rem; /* аналог h-8 (32px) */
+  transform-style: preserve-3d;
+  animation: spinLotus 8s linear infinite;
+}
+
+/* Элегантное 3D-вращение лотоса по осям */
+@keyframes spinLotus {
+  0% { transform: rotateX(25deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(25deg) rotateY(0deg) rotateZ(360deg); }
+}
+
+/* Геометрический лепесток лотоса */
+.lotus-petal {
+  position: absolute;
+  width: 10px;
+  height: 20px;
+  background: linear-gradient(to top, #eab308, #facc15);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
+  transform-origin: bottom center;
+  border: 1px solid rgba(202, 138, 4, 0.4);
+}
+
+/* Яркая сердцевина лотоса */
+.lotus-center {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fef08a;
+  border-radius: 50%;
+  transform: translateZ(8px); 
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
+}
+
+/* Ультра-нежная радиальная маска-дымка для низа видео */
+.video-radial-scrim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1%; /* Возвращаем ваши 14% для мягкого рассеивания волны */
+  background: radial-gradient(circle at bottom right, rgba(255, 230, 204, 0.25) 0%, rgba(255, 230, 204, 0.05) 50%, rgba(255, 230, 204, 0) 100%);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+
+/* Элегантная парящая кнопка управления звуком на видео */
+.video-mute-btn {
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* 1. Уменьшаем внешний контейнер летающего кубика с 40px до 30px */
+.gallery-3d-cube-container {
+  position: absolute;
+  z-index: 50;
+  width: 30px;
+  height: 30px;
+  perspective: 400px;
+}
+
+/* 2. Сжимаем само вращающееся ядро с w-6/h-6 до аккуратных 16 пикселей */
+.cube-3d-core {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  transform-style: preserve-3d;
+  animation: rotate3DBox 4s linear infinite;
+}
+
+/* 3. Корректируем 3D-вынос граней куба (translateZ) под новые размеры */
+.cube-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(220, 38, 6, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 0 4px rgba(255, 0, 0, 0.5); /* чуть уменьшили внутреннюю тень ребер */
+}
+
+
+/* Безупречное непрерывное вращение кубика по всем осям */
+@keyframes rotate3DBox {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+}
+
+
+/* Интегрированная маска-свечение под кнопкой динамика в галерее */
+.gallery-mute-mask-desktop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: radial-gradient(circle, rgba(234, 179, 8, 0.95) 0%, rgba(234, 179, 8, 0.7) 40%, rgba(234, 179, 8, 0) 70%);
+  transform: translate(15px, 15px);
+}
+
+.cursor-ring {
+  width: 40px; /* Сделаем чуть покрупнее */
+  height: 40px;
+  border: 2px solid rgba(0, 0, 0, 0.15); /* Увеличили толщину и яркость */
+  border-radius: 50%;
+  pointer-events: none;
+  position: fixed;
+  z-index: 50;
+  transform: translate(-50%, -50%);
+  /* Добавляем легкое свечение, чтобы он выделялся на любом фоне */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); 
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
