@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import { AdminLogin } from "./AdminLogin.jsx";
 
 export const AdminLayout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const location = useLocation();
+  // const location = useLocation();
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
