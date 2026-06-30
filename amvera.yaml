@@ -1,11 +1,11 @@
 meta:
-  environment: nodejs
+  environment: ssg
   toolchain:
     name: npm
     version: 22
 
 build:
   command: npm install --cache /tmp/.npm-cache && npm run build
+  artifacts:
+    dist: .
 
-run:
-  command: ./node_modules/.bin/vite preview --port 80 --host
