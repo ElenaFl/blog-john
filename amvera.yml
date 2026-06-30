@@ -5,9 +5,7 @@ meta:
     version: 20
 
 build:
-  # Устанавливаем зависимости
   command: npm install --cache /tmp/.npm-cache && npm run build
 
 run:
-  # Запускаем ваш сервер
-  command: node server.js
+  command: npx serve -s dist -l 80
