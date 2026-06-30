@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "json-server --watch data.json",
-    "build": "react-scripts build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
