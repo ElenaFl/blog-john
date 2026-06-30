@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "json-server --watch data.json",
-    "build": "npm config set cache /tmp/.npm-cache && npm config set logs-dir /tmp/.npm-logs && react-scripts build",
+    "build": "react-scripts build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

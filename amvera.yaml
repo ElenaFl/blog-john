@@ -8,4 +8,4 @@ build:
   command: npm install --cache /tmp/.npm-cache && npm run build
 
 run:
-  command: npx serve -s dist -l 80
+  command: px serve -s build -l 80
