@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 export const SubscribeForm = ({ isOpen, setIsExpanded }) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [status, setStatus] = useState(""); 
+  const [status, setStatus] = useState("");
   const [errorText, setErrorText] = useState("");
   const [successText, setSuccessText] = useState("");
 
@@ -21,13 +21,15 @@ export const SubscribeForm = ({ isOpen, setIsExpanded }) => {
   });
 
   useEffect(() => {
-    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (status === "loading") return;
-    
+
     setErrorText("");
     setSuccessText("");
 
@@ -81,13 +83,23 @@ export const SubscribeForm = ({ isOpen, setIsExpanded }) => {
     <div className="fixed left-0 top-[50%] -translate-y-1/2 z-[9999] select-none">
       {isOpen ? (
         <div className="w-[320px] max-xs:w-[280px] p-6 rounded-r-2xl border-y border-r border-gray-100/70 shadow-[15px_0_40px_rgba(0,0,0,0.05)] animate-slide-right relative bg-[#FBFBFA] text-[#222222]">
-          <button 
+          <button
             type="button"
-            onClick={() => setIsExpanded(false)}
+            onClick={() => {
+              setIsExpanded(false);
+              setErrorText(""); // ИСПРАВЛЕНО: стираем ошибку при закрытии
+              setSuccessText(""); // ИСПРАВЛЕНО: стираем текст успеха
+              setEmail(""); // На всякий случай очищаем поле ввода
+              setName(""); // На всякий случай очищаем поле ввода
+            }}
             className="absolute top-4 right-4 text-gray-400 hover:text-[#1A1A1A] transition-colors text-xs cursor-pointer"
-          >✕</button>
+          >
+            ✕
+          </button>
 
-          <h4 className="text-base font-bold text-[#1A1A1A] mb-1 tracking-tight">Subscribe ✨</h4>
+          <h4 className="text-base font-bold text-[#1A1A1A] mb-1 tracking-tight">
+            Subscribe ✨
+          </h4>
           <p className="text-gray-400 text-[11px] mb-4 leading-normal">
             Получайте уведомления о новых публикациях дизайнера на почту
           </p>
@@ -99,18 +111,31 @@ export const SubscribeForm = ({ isOpen, setIsExpanded }) => {
           ) : (
             <form onSubmit={handleSubscribe} className="space-y-2.5">
               <input
-                type="text" required disabled={status === "loading"} placeholder="Ваше имя"
-                value={name} onChange={(e) => setName(e.target.value)}
+                type="text"
+                required
+                disabled={status === "loading"}
+                placeholder="Ваше имя"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full p-2.5 border border-gray-200/80 rounded-lg bg-white text-[#222222] text-xs focus:outline-none focus:border-[#1A1A1A] transition-colors"
               />
               <input
-                type="email" required disabled={status === "loading"} placeholder="your@email.com"
-                value={email} onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                required
+                disabled={status === "loading"}
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-2.5 border border-gray-200/80 rounded-lg bg-white text-[#222222] text-xs focus:outline-none focus:border-[#1A1A1A] transition-colors"
               />
-              {errorText && <p className="text-[10px] text-red-500 font-medium px-1">⚠️ {errorText}</p>}
+              {errorText && (
+                <p className="text-[10px] text-red-500 font-medium px-1">
+                  ⚠️ {errorText}
+                </p>
+              )}
               <button
-                type="submit" disabled={status === "loading"}
+                type="submit"
+                disabled={status === "loading"}
                 className="w-full py-2.5 bg-[#00A8CC] hover:bg-[#00809B] text-white font-medium text-xs rounded-lg transition-all duration-300 cursor-pointer disabled:bg-gray-400"
               >
                 {status === "loading" ? "Отправка..." : "Подписаться"}
@@ -124,8 +149,12 @@ export const SubscribeForm = ({ isOpen, setIsExpanded }) => {
           onClick={() => setIsExpanded(true)}
           className={`hidden min-[1127px]:flex items-center gap-2 pl-3 pr-4 py-2.5 text-white rounded-r-xl shadow-[4px_0_20px_rgba(0,0,0,0.05)] transition-all duration-300 hover:pl-4 group cursor-pointer bg-[#222222] ${shouldAnimate ? "animate-slide-right" : ""}`}
         >
-          <span className="text-sm inline-block animate-bounce-horizontal">✉️</span>
-          <span className="text-[11px] font-bold tracking-wider uppercase">Newsletter</span>
+          <span className="text-sm inline-block animate-bounce-horizontal">
+            ✉️
+          </span>
+          <span className="text-[11px] font-bold tracking-wider uppercase">
+            Newsletter
+          </span>
         </button>
       )}
     </div>
