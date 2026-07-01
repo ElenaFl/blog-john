@@ -45,7 +45,7 @@ export const AdminLogin = ({ onLoginSuccess }) => {
         Admin Access
       </h3>
       <p className="text-gray-400 text-xs mb-6">
-        Введите временный динамический пароль из консоли бэкенд-сервера.
+        Введите пароль
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
