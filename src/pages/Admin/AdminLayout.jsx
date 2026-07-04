@@ -13,12 +13,13 @@ export const AdminLayout = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/admin/check`, { // Используем apiUrl
+        const response = await fetch(`${apiUrl}/api/admin/check`, {
+          // Используем apiUrl
           method: "GET",
           credentials: "include",
         });
         const data = await response.json();
-        
+
         // Сверяем строго с тем, что возвращает бэкенд (data.authorized)
         if (data.success && data.authorized) {
           setIsAuthenticated(true);
@@ -90,11 +91,21 @@ export const AdminLayout = () => {
             >
               Создать пост
             </Link>
+            {/* Обновили стили, чтобы ссылка идеально вписалась в меню */}
+            <Link
+              to="/admin/subscribers"
+              className="text-gray-500 hover:text-[#1A1A1A] transition-colors"
+            >
+              Подписчики
+            </Link>
           </nav>
         </div>
 
         <div className="mt-6 pt-4 text-red-500 border-t border-gray-200/50">
-          <button onClick={handleLogout} className="cursor-pointer hover:text-red-700 transition-colors">
+          <button
+            onClick={handleLogout}
+            className="cursor-pointer hover:text-red-700 transition-colors"
+          >
             Выйти из системы
           </button>
         </div>

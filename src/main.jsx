@@ -12,6 +12,7 @@ import { WorkDetails } from "./pages/WorkDetails/WorkDetails.jsx";
 import { AdminLayout } from "./pages/Admin/AdminLayout.jsx";
 import { AdminForm } from "./pages/Admin/AdminForm.jsx";
 import { AdminPosts } from "./pages/Admin/AdminPosts.jsx";
+import { AdminSubscribers } from "./pages/Admin/AdminSubscribers.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")).render(
             <Route index element={<AdminPosts />} />
             <Route path="posts" element={<AdminPosts />} />
             <Route path="create" element={<AdminForm />} />
+            <Route path="subscribers" element={<AdminSubscribers />} />
           </Route>
         </Route>
       </Routes>
