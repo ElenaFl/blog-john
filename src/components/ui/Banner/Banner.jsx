@@ -1,4 +1,6 @@
 import { AudioJohn } from "../AudioJohn/AudioJohn.jsx";
+// Импортируем наш умный загрузчик картинок с эффектом плавного скелетона
+import ImageWithSkeleton from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const Banner = () => {
   return (
@@ -19,7 +21,7 @@ export const Banner = () => {
               functional simplicity. I help brands transform complex ideas into
               elegant interfaces that work effectively on any device.
             </p>
-            
+
             <div className="flex items-center flex-wrap justify-center md:justify-start gap-4 mt-6">
               <a
                 href="/Resume.pdf"
@@ -31,25 +33,25 @@ export const Banner = () => {
               >
                 Download Resume
               </a>
-              
+
               <AudioJohn />
             </div>
           </div>
-          
+
+          {/* Правая колонка: Аватар автора */}
           <div className="w-full md:w-[30%] order-1 md:order-2 mb-3 sm:mb-9 flex justify-center">
-            <picture>
-              <source media="(min-width: 640px)" srcSet="/images/fotoBig.jpg" />
-              <img
-                src="/images/fotoSmall.jpg"
-                alt="John"
-                loading="lazy"
-                className="bg-[#FBFBFA] object-cover sm:w-60 sm:h-60 w-[174px] h-[174px] rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.05)] pointer-events-none"
-              />
-            </picture>
+            {/* ИСПРАВЛЕНИЕ: Мы заменили связку <picture> на единый ImageWithSkeleton.
+                Поскольку фото на десктопе имеет размер всего 240x240px (sm:w-60 sm:h-60), 
+                использование одной качественной WebP-картинки является лучшим решением. 
+                Теперь лицо автора будет плавно проявляться из мерцающего круглого скелетона! */}
+            <ImageWithSkeleton
+              src="/images/fotoBig.jpg"
+              alt="John"
+              className="bg-[#FBFBFA] sm:w-60 sm:h-60 w-[174px] h-[174px] rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.05)] pointer-events-none"
+            />
           </div>
         </div>
       </div>
     </section>
   );
 };
-

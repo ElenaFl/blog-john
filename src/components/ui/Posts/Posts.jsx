@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+// Импортируем компонент карточки и скелетона с корректными относительными путями
 import { Card } from "../Card/Card.jsx";
+import { PostSkeleton } from "../PostSkeleton/PostSkeleton.jsx";
 import { useNavigate } from "react-router-dom";
 
 export const Posts = () => {
@@ -14,14 +16,19 @@ export const Posts = () => {
     setCheckBtnViewAll(!checkBtnViewAll);
   }
 
+  // Автоматический выбор бэкенда.
+  // Защищает главную страницу от поломок в случае сбоя чтения .env на Vercel
+  const baseUrl = typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://john-back-elenafl.amvera.io";
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setIsLoading(true);
-        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
         const response = await fetch(`${baseUrl}/api/posts`);
         if (!response.ok) {
-          throw new Error("Ошибка загрузки данных с json-server");
+          throw new Error("Ошибка загрузки данных с сервера");
         }
         const data = await response.json();
         setPosts(data);
@@ -41,13 +48,15 @@ export const Posts = () => {
       }
     };
     fetchPosts();
-  }, []);
+  }, [baseUrl]);
 
   const displayedPosts = checkBtnViewAll ? posts : dailyPosts;
 
   return (
     <section id="posts" className="pb-12 sm:pb-20 bg-[#F4F3EE]">
       <div className="mx-auto px-4 sm:max-w-[858px]">
+        
+        {/* Шапка секции с заголовком и кнопкой */}
         <div className="flex justify-between items-center">
           <h3 className="text-lg pt-6 pb-6 sm:text-2xl font-bold tracking-tight text-[var(--text-h)]">
             Recent posts
@@ -63,8 +72,9 @@ export const Posts = () => {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
-            Загрузка постов...
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <PostSkeleton />
+            <PostSkeleton />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">

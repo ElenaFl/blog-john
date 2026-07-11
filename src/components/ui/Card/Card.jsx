@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import ImageWithSkeleton from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
-// Возвращаем ваши исходные стили
+// Возвращаем ваши исходные стили без изменений
 const variantStyles = {
   post: {
     container:
@@ -70,11 +71,20 @@ export const Card = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={(e) => setMouseCoords({ x: e.clientX, y: e.clientY })}
-       className={`${s.container} ${variant === "work" && videoSrc ? "cursor-none" : "cursor-pointer"} transition-all duration-300 ${!videoSrc ? "hover:opacity-85" : ""} text-[#222222]`}
+      className={`${s.container} ${variant === "work" && videoSrc ? "cursor-none" : "cursor-pointer"} transition-all duration-300 ${!videoSrc ? "hover:opacity-85" : ""} text-[#222222]`}
     >
       {variant === "work" && (
         <div className={s.imgWrapper}>
-          {img && <img src={img} alt={title} className={s.image} />}
+          {/* ИСПРАВЛЕНИЕ: Заменили стандартный тег img на ImageWithSkeleton, 
+              передав ему исходный класс стилей s.image. Скелетон будет мерцать, 
+              пока картинка грузится, а потом плавно её проявит! */}
+          {img && (
+            <ImageWithSkeleton 
+              src={img} 
+              alt={title} 
+              className={s.image} 
+            />
+          )}
 
           {videoSrc && isHovered && (
             <>
