@@ -32,11 +32,11 @@ export const Blog = () => {
     };
     fetchPosts();
   }, []);
-
+ 
   return (
-    <div className="mx-auto px-4 py-8 sm:max-w-[858px] relative">
+    <div className="ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4  mb-6 sm:mb-8 sm:max-w-[858px] relative">
       {/* ХЕДЕР БЛОГА */}
-      <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+      <div className="flex items-center justify-between mb-8 border-b border-gray-100 text-3xl sm:text-[44px] font-bold pb-4">
         <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
           Blog
         </h1>

@@ -18,7 +18,7 @@ export const Contact = () => {
     e.preventDefault();
     setErrorMsg("");
 
-    // --- ОТЛАДОЧНЫЕ ЛОГИ НА ЧИСТОМ ФРОНТЕНДЕ ---
+    // --- ОТЛАДОЧНЫЕ ЛОГИ ---
     console.log("🚀 [Contact] Запущена отправка формы...");
     console.log("📋 Данные полей:", {
       name: formData.name.trim(),
@@ -107,7 +107,7 @@ export const Contact = () => {
 
   return (
     <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4  mb-6 sm:mb-8">
-      <h2 className="mt-3 sm:mt-[18px] text-3xl sm:text-[44px] text-black font-bold mb-4">
+      <h2 className="mt-3 sm:mt-[18px] text-3xl sm:text-[44px] font-bold mb-4">
         Contact
       </h2>
 
@@ -196,7 +196,7 @@ export const Contact = () => {
                 />
               </div>
 
-              {/* ХОНЕЙПОТ (ЛОВУШКА ДЛЯ БОТОВ) — ПЕРЕНЕСЕН В КОНЕЦ ФОРМЫ.
+              {/* ХОНЕЙПОТ (ЛОВУШКА ДЛЯ БОТОВ)
                   Используем autoComplete="new-password", чтобы полностью отключить автозаполнение браузером Яндекса/Chrome. */}
               <div className="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden -z-50">
                 <input

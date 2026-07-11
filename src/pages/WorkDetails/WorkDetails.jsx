@@ -118,7 +118,7 @@ export const WorkDetails = () => {
     );
 
   return (
-    <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4 sm:pl-6 sm:pr-6 mb-6 sm:mb-8 text-black">
+    <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4 sm:pl-6 sm:pr-6 mb-6 sm:mb-8">
       {/* Кнопка назад */}
       <button
         onClick={() => navigate(-1)}
