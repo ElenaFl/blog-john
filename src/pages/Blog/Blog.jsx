@@ -34,10 +34,10 @@ export const Blog = () => {
   }, []);
 
   return (
-    <div className="mx-auto px-4 py-8 sm:max-w-[858px] relative">
+  <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4 mb-6 sm:mb-8 relative">
       {/* ХЕДЕР БЛОГА */}
-      <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-        <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
+      <div className="flex items-center justify-between mt-3 sm:mt-[18px] mb-8 border-b border-gray-200/40 pb-8">
+        <h1 className="text-3xl sm:text-[44px] font-bold text-black tracking-tight">
           Blog
         </h1>
 
