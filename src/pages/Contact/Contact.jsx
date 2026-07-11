@@ -30,7 +30,7 @@ export const Contact = () => {
     // 1. ЗАЩИТА ОТ СПАМА: Если скрытое поле заполнено — это бот. Блокируем отправку.
     if (honeypot.trim() !== "") {
       console.warn("🚨 [Contact] Сработал Honeypot! Отправка заблокирована на клиенте.");
-      setErrorMsg("Spam protection triggered. Please refresh and try again.");
+      setErrorMsg("Spam protection triggered. Please refresh and try again without autofilling hidden fields.");
       return;
     }
 
@@ -141,18 +141,6 @@ export const Contact = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* ХОНЕЙПОТ (ЛОВУШКА ДЛЯ БОТОВ) */}
-              <div className="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden -z-50">
-                <input
-                  type="text"
-                  name="fax_hp"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                  tabIndex="-1"
-                  autoComplete="off"
-                />
-              </div>
-
               {/* Блок ошибок валидации */}
               {errorMsg && (
                 <div className="p-3 text-xs bg-red-50 text-red-600 border border-red-100 rounded-xl animate-fade-in">
@@ -160,6 +148,7 @@ export const Contact = () => {
                 </div>
               )}
 
+              {/* Имя */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Your name:
@@ -175,6 +164,7 @@ export const Contact = () => {
                 />
               </div>
 
+              {/* Email */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Your email:
@@ -190,6 +180,7 @@ export const Contact = () => {
                 />
               </div>
 
+              {/* Сообщение */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Your message:
@@ -205,6 +196,20 @@ export const Contact = () => {
                 />
               </div>
 
+              {/* ХОНЕЙПОТ (ЛОВУШКА ДЛЯ БОТОВ) — ПЕРЕНЕСЕН В КОНЕЦ ФОРМЫ.
+                  Используем autoComplete="new-password", чтобы полностью отключить автозаполнение браузером Яндекса/Chrome. */}
+              <div className="absolute opacity-0 pointer-events-none w-px h-px overflow-hidden -z-50">
+                <input
+                  type="text"
+                  name="fax_hp"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex="-1"
+                  autoComplete="new-password"
+                />
+              </div>
+
+              {/* Кнопка отправки */}
               <button
                 type="submit"
                 disabled={isSending}
