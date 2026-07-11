@@ -25,12 +25,29 @@ export const AdminPosts = () => {
   const [deletingPostId, setDeletingPostId] = useState(null);
   const [actionError, setActionError] = useState("");
 
-  // Умный динамический выбор адреса бэкенда на основе имени хоста.
+  // ШАГ 2: Состояние для всплывающих Toast-уведомлений
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
+
+  // Умный динамический выбор адреса бэкенда на основе имени хоста
   const apiUrl = typeof window !== "undefined" && window.location.hostname === "localhost"
     ? "http://localhost:5000"
     : "https://john-back-elenafl.amvera.io";
 
-  // Обычная, простая функция без сложных хуков useCallback
+  // Автоматическое скрытие уведомления через 3 секунды
+  useEffect(() => {
+    if (toast.show) {
+      const timer = setTimeout(() => {
+        setToast((prev) => ({ ...prev, show: false }));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast.show]);
+
+  // Функция для вызова всплывающего уведомления
+  const showNotification = (message, type = "success") => {
+    setToast({ show: true, message, type });
+  };
+
   const fetchAdminPosts = async () => {
     try {
       const response = await fetch(`${apiUrl}/api/posts`, {
@@ -54,7 +71,6 @@ export const AdminPosts = () => {
     }
   };
 
-  // Вызов эффекта с игнорированием правил линтинга
   useEffect(() => {
     fetchAdminPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,12 +102,16 @@ export const AdminPosts = () => {
       if (response.ok && data.success) {
         setPosts(posts.filter(post => post.id !== deletingPostId));
         setDeletingPostId(null);
+        // Вызываем красивое уведомление об успешном удалении
+        showNotification("Публикация успешно удалена! 🗑️", "success");
       } else {
         setActionError(data.message || "Ошибка при удалении.");
+        showNotification(data.message || "Ошибка при удалении.", "error");
       }
     } catch (err) {
       console.error("Ошибка запроса на удаление:", err);
       setActionError("Не удалось связаться с сервером.");
+      showNotification("Не удалось связаться с сервером.", "error");
     }
   };
 
@@ -157,13 +177,17 @@ export const AdminPosts = () => {
         console.log("✨ [Edit Mode] Пост успешно обновлен на сервере!");
         setIsEditModalOpen(false);
         setEditingPost(null);
+        // Вызываем уведомление об успешном сохранении изменений
+        showNotification("Изменения успешно сохранены! 💾", "success");
         fetchAdminPosts();
       } else {
         setSaveError(data.message || "Ошибка при сохранении изменений на сервере.");
+        showNotification(data.message || "Ошибка сохранения.", "error");
       }
     } catch (err) {
       console.error("❌ Критическая ошибка при отправке PUT запроса:", err);
       setSaveError("Не удалось соединиться с сервером. Проверьте сеть.");
+      showNotification("Сетевая ошибка при сохранении.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -237,7 +261,7 @@ export const AdminPosts = () => {
       )}
 
       {/* =========================================================================
-          КРАСИВОЕ ДИАЛОГОВОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ (Вместо confirm)
+          ДИАЛОГОВОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ (Вместо confirm)
           ========================================================================= */}
       {deletingPostId && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -369,6 +393,22 @@ export const AdminPosts = () => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          ВСПЛЫВАЮЩИЙ TOAST С УВЕДОМЛЕНИЕМ О ДЕЙСТВИИ
+          ========================================================================= */}
+      {toast.show && (
+        <div
+          className={`fixed bottom-5 right-5 z-50 p-4 rounded-2xl shadow-xl border text-xs font-semibold uppercase tracking-wider animate-fade-in flex items-center gap-2.5 transition-all duration-300 ${
+            toast.type === "success"
+              ? "bg-emerald-50 border-emerald-100 text-emerald-800 shadow-emerald-100/40"
+              : "bg-red-50 border-red-100 text-red-800 shadow-red-100/40"
+          }`}
+        >
+          <span className="text-base">{toast.type === "success" ? "✨" : "⚠️"}</span>
+          <span>{toast.message}</span>
         </div>
       )}
     </div>
