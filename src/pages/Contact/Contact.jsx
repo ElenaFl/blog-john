@@ -106,7 +106,7 @@ export const Contact = () => {
   };
 
   return (
-    <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4  mb-6 sm:mb-8">
+    <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4  mb-6 sm:mb-8 relative">
       <h2 className="mt-3 sm:mt-[18px] text-3xl sm:text-[44px] font-bold mb-4">
         Contact
       </h2>
