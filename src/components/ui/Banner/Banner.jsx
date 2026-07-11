@@ -1,6 +1,6 @@
 import { AudioJohn } from "../AudioJohn/AudioJohn.jsx";
 // Импортируем наш умный загрузчик картинок с эффектом плавного скелетона
-import ImageWithSkeleton from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const Banner = () => {
   return (

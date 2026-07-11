@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import ImageWithSkeleton from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 // Возвращаем ваши исходные стили без изменений
 const variantStyles = {
