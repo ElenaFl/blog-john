@@ -25,10 +25,11 @@ export const AdminPosts = () => {
   const [deletingPostId, setDeletingPostId] = useState(null);
   const [actionError, setActionError] = useState("");
 
-  // ШАГ 2: Состояние для всплывающих Toast-уведомлений
+  // Состояние для всплывающих Toast-уведомлений
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
-  // Умный динамический выбор адреса бэкенда на основе имени хоста
+  // Умный выбор URL бэкенда: автоматически определяет локальный хост 
+  // и внешнюю ссылку для Amvera, полностью защищая сборщик от предупреждений стандартов ES2015
   const apiUrl = typeof window !== "undefined" && window.location.hostname === "localhost"
     ? "http://localhost:5000"
     : "https://john-back-elenafl.amvera.io";
@@ -50,7 +51,7 @@ export const AdminPosts = () => {
 
   const fetchAdminPosts = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/posts`, {
+      const response = await fetch(`${apiUrl}/api/admin/posts`, {
         method: "GET",
         credentials: "include",
       });
@@ -87,7 +88,7 @@ export const AdminPosts = () => {
     if (!deletingPostId) return;
 
     try {
-      const response = await fetch(`${apiUrl}/api/posts/${deletingPostId}`, {
+      const response = await fetch(`${apiUrl}/api/admin/posts/${deletingPostId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -102,7 +103,6 @@ export const AdminPosts = () => {
       if (response.ok && data.success) {
         setPosts(posts.filter(post => post.id !== deletingPostId));
         setDeletingPostId(null);
-        // Вызываем красивое уведомление об успешном удалении
         showNotification("Публикация успешно удалена! 🗑️", "success");
       } else {
         setActionError(data.message || "Ошибка при удалении.");
@@ -115,9 +115,8 @@ export const AdminPosts = () => {
     }
   };
 
-  // Шаг 1. Открытие модального окна и заполнение формы старыми данными поста
+  // Открытие модального окна и заполнение формы старыми данными поста
   const handleStartEdit = (post) => {
-    console.log("📝 [Edit Mode] Инициализируем редактирование поста:", post);
     setEditingPost(post);
     setEditFormData({
       title: post.title,
@@ -129,7 +128,7 @@ export const AdminPosts = () => {
     setIsEditModalOpen(true);
   };
 
-  // Шаг 2. Обработка ввода изменений в форму
+  // Обработка ввода изменений в форму
   const handleEditInputChange = (e) => {
     setEditFormData({
       ...editFormData,
@@ -137,13 +136,11 @@ export const AdminPosts = () => {
     });
   };
 
-  // Шаг 3. Отправка измененного поста на бэкенд (PUT)
+  // Отправка измененного поста на бэкенд (PUT)
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
     setSaveError("");
-
-    console.log("📡 [Edit Mode] Отправляем измененные данные на бэкенд...");
 
     if (!editFormData.title.trim() || !editFormData.description.trim()) {
       setSaveError("Заголовок и текст статьи обязательны для заполнения.");
@@ -171,13 +168,10 @@ export const AdminPosts = () => {
       });
 
       const data = await response.json();
-      console.log("📥 [Edit Mode] Получен ответ от бэкенда:", data);
 
       if (response.ok && data.success) {
-        console.log("✨ [Edit Mode] Пост успешно обновлен на сервере!");
         setIsEditModalOpen(false);
         setEditingPost(null);
-        // Вызываем уведомление об успешном сохранении изменений
         showNotification("Изменения успешно сохранены! 💾", "success");
         fetchAdminPosts();
       } else {
@@ -185,7 +179,7 @@ export const AdminPosts = () => {
         showNotification(data.message || "Ошибка сохранения.", "error");
       }
     } catch (err) {
-      console.error("❌ Критическая ошибка при отправке PUT запроса:", err);
+      console.error("Критическая ошибка при отправке PUT запроса:", err);
       setSaveError("Не удалось соединиться с сервером. Проверьте сеть.");
       showNotification("Сетевая ошибка при сохранении.", "error");
     } finally {
@@ -260,9 +254,7 @@ export const AdminPosts = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          ДИАЛОГОВОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ (Вместо confirm)
-          ========================================================================= */}
+      {/* ДИАЛОГОВОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ */}
       {deletingPostId && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-2xl max-w-sm w-full p-6 animate-fade-in text-center">
@@ -289,9 +281,7 @@ export const AdminPosts = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          ВСПЛЫВАЮЩЕЕ ОКНО (MODAL) ДЛЯ БЕЗОПАСНОГО РЕДАКТИРОВАНИЯ СТАТЬИ
-          ========================================================================= */}
+      {/* ВСПЛЫВАЮЩЕЙ ОКНО (MODAL) ДЛЯ РЕДАКТИРОВАНИЯ СТАТЬИ */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 animate-fade-in">
@@ -312,7 +302,6 @@ export const AdminPosts = () => {
             )}
 
             <form onSubmit={handleSaveEdit} className="space-y-5">
-              {/* Поле Заголовка */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Заголовок статьи:
@@ -328,7 +317,6 @@ export const AdminPosts = () => {
                 />
               </div>
 
-              {/* Поле Картинки */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Ссылка на обложку (Image URL):
@@ -343,7 +331,6 @@ export const AdminPosts = () => {
                 />
               </div>
 
-              {/* Поле Тегов */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Теги (через запятую):
@@ -358,7 +345,6 @@ export const AdminPosts = () => {
                 />
               </div>
 
-              {/* Поле Описания (Контента) */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
                   Текст публикации:
@@ -374,7 +360,6 @@ export const AdminPosts = () => {
                 />
               </div>
 
-              {/* Кнопки действий */}
               <div className="flex gap-4 pt-4 border-t border-gray-100">
                 <button
                   type="button"
@@ -396,9 +381,7 @@ export const AdminPosts = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          ВСПЛЫВАЮЩИЙ TOAST С УВЕДОМЛЕНИЕМ О ДЕЙСТВИИ
-          ========================================================================= */}
+      {/* ВСПЛЫВАЮЩИЙ TOAST С УВЕДОМЛЕНИЕМ О ДЕЙСТВИИ */}
       {toast.show && (
         <div
           className={`fixed bottom-5 right-5 z-50 p-4 rounded-2xl shadow-xl border text-xs font-semibold uppercase tracking-wider animate-fade-in flex items-center gap-2.5 transition-all duration-300 ${
