@@ -11,7 +11,7 @@ const variantStyles = {
     infoWrapper: "flex gap-2 mb-4 flex-nowrap",
     date: "mb-4 text-lg",
     tags: "text-lg",
-    description: "sm:text-[17px] line-clamp-3 text-[#444444]",
+    description: "whitespace-pre-line sm:text-[17px] line-clamp-3 text-[#444444]",
   },
   work: {
     container:
@@ -24,7 +24,7 @@ const variantStyles = {
     infoWrapper: "mb-4 flex gap-6 sm:gap-7 text-[20px]",
     date: "px-3 bg-[#1A1A1A] rounded-3xl text-white flex items-center justify-center text-sm font-medium",
     tags: "text-gray-400 font-medium",
-    description: "text-[17px] line-clamp-3 text-[#444444]",
+    description: "whitespace-pre-line text-[17px] line-clamp-3 text-[#444444]",
   },
   postBlog: {
     container:
@@ -34,7 +34,7 @@ const variantStyles = {
     image: "hidden",
     infoWrapper:
       "flex gap-4 sm:gap-5 mb-3 sm:mb-4 font-bold text-gray-400 text-[17px] sm:text-[20px] font-medium",
-    description: "text-[17px] line-clamp-3 text-[#444444]",
+    description: "whitespace-pre-line text-[17px] line-clamp-3 text-[#444444]",
   },
 };
 

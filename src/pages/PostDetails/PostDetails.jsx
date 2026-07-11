@@ -59,7 +59,7 @@ export const PostDetails = () => {
         {/* =========================================================
                         ВЫВОД АБЗАЦЕВ
             ========================================================= */}
-        <div className="text-base sm:text-[17px] leading-relaxed opacity-95 custom-article-container">
+        <div className="whitespace-pre-line text-base sm:text-[17px] leading-relaxed opacity-95 custom-article-container">
           {post.description && post.description.split("\n").map((paragraph, index) => {
             // Если строчка пустая (после двойного переноса \n\n), пропускаем её, чтобы не плодить пустые места
             if (!paragraph.trim()) return null;
