@@ -189,19 +189,20 @@ video {
 /* Контейнер кубика */
 .gallery-3d-cube-container {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 20px; /* Размер контейнера */
+  height: 20px;
   z-index: 50;
   pointer-events: none;
-  perspective: 100px; /* Эффект перспективы */
+  perspective: 100px;
 }
 
-.cube-3d-core {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotate3DBox 6s infinite linear; /* Медленное, плавное вращение */
+.cube-face {
+  position: absolute;
+  width: 20px; /* Размер грани */
+  height: 20px;
+  background: rgba(239, 68, 68, 0.2); /* Ярко-красный, прозрачный */
+  border: 1px solid rgba(239, 68, 68, 0.8); /* Четкий, более светлый контур */
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); /* Внешнее свечение вместо тяжелой тени */
 }
 
 /* Красные каркасные грани */
