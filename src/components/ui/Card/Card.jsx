@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 // Импортируем наш умный загрузчик картинок с эффектом плавного скелетона
-import { ImageWithSkeleton } from "../ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 const variantStyles = {
   post: {
