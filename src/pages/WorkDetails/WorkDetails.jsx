@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {ImageWithSkeleton} from "../../ui/components/ImageWithSkeleton/ImageWithSkeleton.jsx";
+import {ImageWithSkeleton} from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
