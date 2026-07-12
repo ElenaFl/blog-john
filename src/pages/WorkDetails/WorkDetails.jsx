@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
+// Импортируем наш умный загрузчик картинок с плавным скелетоном
+import {ImageWithSkeleton} from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -59,8 +60,7 @@ export const WorkDetails = () => {
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const apiUrl =
-          import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
         const response = await fetch(`${apiUrl}/api/works/${id}`);
         if (!response.ok) throw new Error("Ошибка загрузки");
         const data = await response.json();
@@ -82,11 +82,7 @@ export const WorkDetails = () => {
 
     if (showMainVideo) {
       video.muted = isMuted;
-      video
-        .play()
-        .catch((err) =>
-          console.log("Автоплей главного видео заблокирован:", err),
-        );
+      video.play().catch((err) => console.log("Автоплей главного видео заблокирован:", err));
     } else {
       video.pause();
       video.currentTime = 0;
@@ -100,11 +96,7 @@ export const WorkDetails = () => {
 
     if (showGalleryVideo) {
       video.muted = isMuted;
-      video
-        .play()
-        .catch((err) =>
-          console.log("Автоплей видео галереи заблокирован:", err),
-        );
+      video.play().catch((err) => console.log("Автоплей видео галереи заблокирован:", err));
     } else {
       video.pause();
       video.currentTime = 0;
@@ -126,10 +118,7 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -157,10 +146,7 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -207,10 +193,7 @@ export const WorkDetails = () => {
   // Безопасный разбор галереи и тегов проекта
   let galleryImages = [];
   try {
-    galleryImages =
-      typeof work.gallery === "string"
-        ? JSON.parse(work.gallery)
-        : work.gallery || [];
+    galleryImages = typeof work.gallery === "string" ? JSON.parse(work.gallery) : (work.gallery || []);
   } catch (e) {
     console.error("Ошибка парсинга галереи проекта:", e);
   }
@@ -218,8 +201,8 @@ export const WorkDetails = () => {
   const tagsArray = Array.isArray(work.tags)
     ? work.tags
     : typeof work.tags === "string"
-      ? JSON.parse(work.tags || "[]")
-      : [];
+    ? JSON.parse(work.tags || "[]")
+    : [];
 
   const formattedTags = tagsArray
     .map((tag) => {
@@ -228,12 +211,11 @@ export const WorkDetails = () => {
     })
     .join(" ");
 
-  // Умное автоматическое определение необходимости обрезки черных полей
-  // (сработает только для проекта с девушкой или видео с водяными знаками)
-  const shouldApplyZoom =
-    work.title?.toLowerCase().includes("девуш") ||
-    work.title?.toLowerCase().includes("girl") ||
-    id === "1";
+  // УМНЫЙ МАРКЕР: Автоматически определяем проект "Девушка" по заголовку
+  const isGirlProject = work.title?.toLowerCase().includes("девуш") || work.title?.toLowerCase().includes("girl");
+  
+  // Включаем зум (scale) только для проекта с девушкой, чтобы срезать черные полосы и водяной знак
+  const shouldApplyZoom = isGirlProject;
 
   return (
     <div className="pt-12 sm:pt-36 bg-transparent">
@@ -257,10 +239,10 @@ export const WorkDetails = () => {
           <span className="px-3 py-1 bg-[#1A1A1A] rounded-3xl text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider flex items-center justify-center shrink-0">
             {work.date}
           </span>
-
+          
           {/* Разделитель "|" (скрывается на мобильных для красоты адаптива) */}
           <span className="hidden sm:inline text-gray-300">|</span>
-
+          
           {/* Серая строка тегов */}
           <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">
             {formattedTags}
@@ -273,27 +255,22 @@ export const WorkDetails = () => {
           onMouseLeave={() => setIsMainHovered(false)}
           onMouseMove={handleMainMouseMove}
           className={`relative w-full aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200/40 bg-gray-100 ${
-            work.detailVideoSrc && !isTouchDevice
-              ? "cursor-none"
-              : "cursor-pointer"
+            work.detailVideoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"
           }`}
         >
-          {/* ИСПРАВЛЕНИЕ: Добавлен динамический класс масштабирования (scale-[1.12]), который 
-              аккуратно увеличивает картинку и срезает черные полосы по бокам только для видео с девушкой! */}
+          {/* ИСПРАВЛЕНИЕ: Мы применили класс [&_img]:scale-[1.12], который зуммирует именно 
+              внутреннюю картинку скелетона, оставляя рамку контейнера ровной. 
+              Все черные бока и текст теперь идеально срезаны краями рамки! */}
           <ImageWithSkeleton
             src={work.img}
             alt={work.title}
-            className={`w-full h-full object-cover transition-transform duration-300 ${shouldApplyZoom ? "scale-[1.12]" : ""}`}
+            className={`w-full h-full object-cover transition-transform duration-300 ${shouldApplyZoom ? "[&_img]:scale-[1.12]" : ""}`}
           />
 
           {/* Интерактивные видео-эффекты (рендерим только для мышки на ПК) */}
           {showMainVideo && (
             <>
-              {/* ===================================================================
-                  ИСПРАВЛЕНИЕ: Мы заменили простую белую точку внутри круглого курсора 
-                  на изысканный, светящийся золотой лотос (интерактивный SVG)! 
-                  Он будет мягко пульсировать, создавая дзен-эффект при наведении.
-                  =================================================================== */}
+              {/* Кастомный круглый курсор с золотым лотосом */}
               <div
                 className="cursor-ring pointer-events-none fixed z-50 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 border border-white/60 rounded-full w-10 h-10 transition-transform duration-75 ease-out"
                 style={{
@@ -302,38 +279,22 @@ export const WorkDetails = () => {
                 }}
               >
                 {/* Авторский SVG золотого цветка лотоса */}
-                <svg
-                  viewBox="0 0 64 64"
-                  className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
+                <svg 
+                  viewBox="0 0 64 64" 
+                  className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse" 
                   fill="currentColor"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Центральный лепесток */}
-                  <path
-                    d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
-                    fill="#FBBF24"
-                  />
-                  {/* Левый лепесток */}
-                  <path
-                    d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
-                    fill="#F59E0B"
-                  />
-                  {/* Правый лепесток */}
-                  <path
-                    d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
-                    fill="#F59E0B"
-                  />
-                  {/* Основание лотоса */}
-                  <path
-                    d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
-                    fill="#D97706"
-                  />
+                  <path d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z" fill="#FBBF24" />
+                  <path d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z" fill="#F59E0B" />
+                  <path d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z" fill="#F59E0B" />
+                  <path d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z" fill="#D97706" />
                 </svg>
               </div>
 
               {/* Умный холст */}
-              {/* ИСПРАВЛЕНИЕ: Для холста видео также применен класс scale-[1.12], 
-                  чтобы срезать водяной знак и полосы на лету! */}
+              {/* ИСПРАВЛЕНИЕ: К холсту видео также применен зум, чтобы идеально 
+                  скрыть водяной знак и боковые полосы в режиме проигрывания! */}
               <canvas
                 ref={mainCanvasRef}
                 className={`absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in ${shouldApplyZoom ? "scale-[1.12]" : ""}`}
@@ -370,13 +331,12 @@ export const WorkDetails = () => {
         </div>
 
         {/* ===================================================================
-            УМНЫЕ УСЛОВИЯ ОТРИСОВКИ: Вся нижняя часть страницы будет рендериться 
-            только тогда, когда эти данные РЕАЛЬНО ЗАПОЛНЕНЫ в базе данных. 
-            Для проекта с девушкой они автоматически скроются!
+            УМНЫЕ УСЛОВИЯ ОТРИСОВКИ: Если это проект с девушкой (isGirlProject),
+            все нижние секции ГАРАНТИРОВАНО полностью скрываются из структуры React!
             =================================================================== */}
 
         {/* Дополнительный раздел: Творческий процесс */}
-        {work.sectionTitle && work.processText && (
+        {!isGirlProject && work.sectionTitle && work.processText && (
           <div className="border-t border-gray-200/40 pt-10 mb-12 animate-fade-in">
             <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-h)] mb-4 tracking-tight">
               {work.sectionTitle}
@@ -391,17 +351,14 @@ export const WorkDetails = () => {
         )}
 
         {/* Слайдер-галерея изображений проекта */}
-        {galleryImages.length > 0 && (
+        {!isGirlProject && galleryImages.length > 0 && (
           <div className="space-y-6 mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">
               Project Gallery
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {galleryImages.map((imagePath, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video"
-                >
+                <div key={idx} className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video">
                   <ImageWithSkeleton
                     src={imagePath}
                     alt={`Галерея ${idx + 1}`}
@@ -414,7 +371,7 @@ export const WorkDetails = () => {
         )}
 
         {/* Дополнительное видео в галерее */}
-        {work.videoSrc && (
+        {!isGirlProject && work.videoSrc && (
           <div className="mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">
               Interactive Preview
@@ -443,27 +400,15 @@ export const WorkDetails = () => {
                       top: `${galleryCoords.y}px`,
                     }}
                   >
-                    <svg
-                      viewBox="0 0 64 64"
-                      className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
+                    <svg 
+                      viewBox="0 0 64 64" 
+                      className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse" 
                       fill="currentColor"
                     >
-                      <path
-                        d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
-                        fill="#FBBF24"
-                      />
-                      <path
-                        d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
-                        fill="#F59E0B"
-                      />
-                      <path
-                        d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
-                        fill="#F59E0B"
-                      />
-                      <path
-                        d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
-                        fill="#D97706"
-                      />
+                      <path d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z" fill="#FBBF24" />
+                      <path d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z" fill="#F59E0B" />
+                      <path d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z" fill="#F59E0B" />
+                      <path d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z" fill="#D97706" />
                     </svg>
                   </div>
 
