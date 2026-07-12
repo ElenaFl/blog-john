@@ -6,16 +6,22 @@ export const WorkDetailMashin = ({ work }) => {
   const navigate = useNavigate();
   const videoRefs = useRef({});
 
-  // Инициализируем состояние один раз при запуске, чтобы не вызывать useEffect
-  const [isMobile, setIsMobile] = useState(() => {
-    return typeof window !== "undefined"
-      ? window.matchMedia("(max-width: 768px)").matches
-      : false;
-  });
+  // 1. Инициализируем состояние БЕЗ useEffect
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false
+  );
 
+  const [isTouchDevice, setIsTouchDevice] = useState(() => 
+    typeof window !== "undefined" 
+      ? ("ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches) 
+      : false
+  );
+
+  // 2. Эффект только для подписки на изменения
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+      setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches);
     };
 
     window.addEventListener("resize", handleResize);
@@ -40,48 +46,27 @@ export const WorkDetailMashin = ({ work }) => {
 
         {work.gallery?.map((item, index) => {
           if (item.type === "heading")
-            return (
-              <h4
-                key={index}
-                className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left"
-              >
-                {item.text}
-              </h4>
-            );
-
+            return <h4 key={index} className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left">{item.text}</h4>;
+          
           if (item.type === "text")
-            return (
-              <p
-                key={index}
-                className="text-[16px] leading-relaxed text-gray-800 text-left mb-2"
-              >
-                {item.text}
-              </p>
-            );
+            return <p key={index} className="text-[16px] leading-relaxed text-gray-800 text-left mb-2">{item.text}</p>;
 
           if (item.type === "video") {
             return (
               <div key={index} className="w-full mb-6 text-left">
                 <div
                   onMouseEnter={() => {
-                    if (!isMobile)
-                      videoRefs.current[index]?.play().catch(() => {});
+                    if (!isMobile && !isTouchDevice) videoRefs.current[index]?.play().catch(() => {});
                   }}
                   onMouseLeave={() => {
-                    if (!isMobile && videoRefs.current[index]) {
+                    if (videoRefs.current[index]) {
                       videoRefs.current[index].pause();
                       videoRefs.current[index].currentTime = 0;
                     }
                   }}
                   className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
                 >
-                  {item.img && (
-                    <img
-                      src={item.img}
-                      alt="Preview"
-                      className="w-full h-auto"
-                    />
-                  )}
+                  {item.img && <img src={item.img} alt="Preview" className="w-full h-auto" />}
                   <video
                     ref={(el) => (videoRefs.current[index] = el)}
                     src={item.video}
@@ -95,13 +80,7 @@ export const WorkDetailMashin = ({ work }) => {
           }
 
           if (item.type === "image")
-            return (
-              <ImageWithSkeleton
-                key={index}
-                src={item.src}
-                className="w-full h-auto rounded-md mb-6"
-              />
-            );
+            return <ImageWithSkeleton key={index} src={item.src} className="w-full h-auto rounded-md mb-6" />;
 
           return null;
         })}
