@@ -42,8 +42,7 @@ export const PostDetails = () => {
           ← GO BACK
         </button>
 
-        {/* Заголовок статьи */}
-        <h2 className="mb-4 sm:mb-6 text-3xl sm:text-[44px] font-bold leading-tight text-[var(--text-h)]">
+        <h2 className="mb-4 sm:mb-6 text-[28px] sm:text-[38px] font-bold leading-tight tracking-tight text-[var(--text-h)]">
           {post.title}
         </h2>
 
@@ -53,13 +52,15 @@ export const PostDetails = () => {
           <span className="hidden sm:inline text-gray-300">|</span>
           <span className="text-[var(--accent)]">
             {post.tags &&
-              post.tags.map((tag, index) => <span key={index} className="mr-1.5">{tag}</span>)}
+              post.tags.map((tag, index) => (
+                <span key={index} className="mr-1.5">
+                  {tag}
+                </span>
+              ))}
           </span>
         </div>
 
-        {/* ===================================================================
-            Текст статьи
-            =================================================================== */}
+        {/* Вывод текста напрямую с поддержкой абзацев */}
         <div
           style={{ textAlign: "justify" }}
           className="whitespace-pre-line text-[18px] sm:text-[20px] leading-relaxed opacity-95 custom-article-container custom-paragraph text-justify"

@@ -1,41 +1,46 @@
 import { useState, useRef, useEffect } from "react";
-import { ImageWithSkeleton } from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
+// Импортируем наш умный загрузчик картинок с эффектом плавного скелетона
+import ImageWithSkeleton from "../ImageWithSkeleton.jsx";
 
-// Возвращаем ваши исходные стили без изменений
+// =========================================================================
+// ИСПРАВЛЕНИЕ: Мы полностью перенастроили шкалу размеров и цветов шрифтов,
+// чтобы карточки выглядели изящно, читаемо и идеально гармонировали с деталями статей!
+// =========================================================================
 const variantStyles = {
   post: {
     container:
       "sm:min-h-[335px] p-5 sm:p-6 border border-gray-200/40 rounded-2xl mb-6 bg-[#FBFBFA]",
-    title: "mb-4 sm:mb-6 font-bold text-2xl text-[#1A1A1A]",
+    title: "mb-3 sm:mb-4 font-bold text-xl sm:text-2xl text-[#1A1A1A] tracking-tight leading-tight",
     image: "hidden",
-    infoWrapper: "flex gap-2 mb-4 flex-nowrap",
-    date: "mb-4 text-lg",
-    tags: "text-lg",
-    description:
-      "whitespace-pre-line sm:text-[17px] line-clamp-3 text-[#444444]",
+    infoWrapper: "flex items-center gap-2.5 sm:gap-3 mb-4 text-[13px] sm:text-[14px] text-gray-500/90 font-medium tracking-wide",
+    date: "text-gray-500/90",
+    tags: "text-[var(--accent)]",
+    description: "text-[15px] sm:text-[16px] leading-relaxed text-[#444444] line-clamp-3 opacity-95",
   },
   work: {
     container:
       "flex flex-col gap-[18px] sm:flex-row pb-6 sm:pb-9 border-b border-gray-200/40 mb-6 sm:mb-7 bg-[#FBFBFA]",
-    title: "mb-4 text-2xl font-bold sm:text-2xl text-[#1A1A1A]",
+    title: "mb-3 sm:mb-4 text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight leading-tight",
     imgWrapper:
       "w-full sm:w-[246px] relative aspect-video overflow-hidden rounded-xl bg-gray-100 shrink-0",
     image: "w-full h-full object-cover rounded-xl absolute top-0 left-0 z-10",
     video: "w-full h-full object-cover rounded-xl absolute top-0 left-0 z-20",
-    infoWrapper: "mb-4 flex gap-6 sm:gap-7 text-[20px]",
-    date: "px-3 bg-[#1A1A1A] rounded-3xl text-white flex items-center justify-center text-sm font-medium",
+    infoWrapper: "mb-4 flex items-center gap-4 text-sm sm:text-base tracking-wide",
+    date: "px-2.5 py-0.5 bg-[#1A1A1A] rounded-3xl text-white flex items-center justify-center text-xs font-semibold uppercase tracking-wider",
     tags: "text-gray-400 font-medium",
-    description: "whitespace-pre-line text-[17px] line-clamp-3 text-[#444444]",
+    description: "text-[15px] sm:text-[16px] leading-relaxed text-[#444444] line-clamp-3 opacity-95",
   },
   postBlog: {
     container:
-      "pt-6 pb-6 sm:pt-8 sm:pb-7 border-b border-gray-200 bg-[#FBFBFA]",
+      "pt-6 pb-6 sm:pt-8 sm:pb-7 border-b border-gray-200/40 bg-[#FBFBFA]",
     title:
-      "text-[26px]/[30px] sm:text-[30px] mb-3 sm:mb-4 font-bold text-[#1A1A1A]",
+      "text-[22px] sm:text-[28px] mb-2 sm:mb-3 font-bold text-[#1A1A1A] tracking-tight leading-snug hover:text-[#00809B] transition-colors",
     image: "hidden",
     infoWrapper:
-      "flex gap-4 sm:gap-5 mb-3 sm:mb-4 font-bold text-gray-400 text-[17px] sm:text-[20px] font-medium",
-    description: "whitespace-pre-line text-[17px] line-clamp-3 text-[#444444]",
+      "flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-[14px] sm:text-[15px] text-gray-500/90 font-medium tracking-wide",
+    date: "text-gray-500/90",
+    tags: "text-[var(--accent)]",
+    description: "text-[16px] sm:text-[17px] leading-relaxed text-[#444444] line-clamp-3 opacity-95",
   },
 };
 
@@ -76,13 +81,15 @@ export const Card = ({
     >
       {variant === "work" && (
         <div className={s.imgWrapper}>
-          {/* ИСПРАВЛЕНИЕ: Заменили стандартный тег img на ImageWithSkeleton, 
-              передав ему исходный класс стилей s.image. Скелетон будет мерцать, 
-              пока картинка грузится, а потом плавно её проявит! */}
           {img && (
-            <ImageWithSkeleton src={img} alt={title} className={s.image} />
+            <ImageWithSkeleton 
+              src={img} 
+              alt={title} 
+              className={s.image} 
+            />
           )}
 
+          {}
           {videoSrc && isHovered && (
             <>
               {/* ВСТАВЛЯЕМ КУРСОР ЗДЕСЬ */}
@@ -122,6 +129,7 @@ export const Card = ({
                 muted={isMuted}
                 className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
               />
+              {}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -167,6 +175,7 @@ export const Card = ({
           )}
         </div>
       )}
+      {}
       <div className="flex-1">
         {title && <h3 className={s.title}>{title}</h3>}
         <div className={s.infoWrapper}>
@@ -181,7 +190,13 @@ export const Card = ({
             </span>
           )}
           <span>|</span>
-          {tags && <span className={s.tags}>{tags?.join(" ")}</span>}
+          {tags && (
+            <span className={s.tags}>
+              {tags?.map((tag, idx) => (
+                <span key={idx} className="mr-1.5">{tag}</span>
+              ))}
+            </span>
+          )}
         </div>
         {description && <p className={s.description}>{description}</p>}
       </div>
