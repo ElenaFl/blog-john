@@ -79,7 +79,7 @@ export const Works = () => {
   return (
     <section id="works" className="pt-6 sm:pt-8 bg-transparent">
       <div className="mx-auto px-4 sm:max-w-[858px]">
-        {/* СМЯГЧЕНО: Заголовок теперь берет мягкий глубокий уголь var(--text-h) */}
+        {/* СМЯГЧЕНО: Заголовок берет мягкий глубокий уголь var(--text-h) */}
         <h3 className="mb-6 sm:mb-8 text-lg text-center sm:text-left sm:text-2xl font-bold tracking-tight text-[var(--text-h)]">
           Featured works
         </h3>

@@ -12,7 +12,7 @@ export const Banner = () => {
         <div className="flex flex-col items-center md:flex-row sm:justify-between">
           <div className="sm:w-[60%] w-full order-2 md:order-1 flex flex-col items-center md:items-start">
             <h1 className="sm:mt-4 sm:mb-8 mb-3 font-bold sm:text-[44px]/[50px] text-[32px]/[36px] md:text-left text-center">
-              Hi, I am John, Creative Technologist
+              Hi, I am John Doe, Creative Technologist
             </h1>
             <p className="sm:mb-9 mb-0 md:text-left text-center opacity-90 leading-relaxed text-base">
               I specialize in creating intuitive digital products by combining
