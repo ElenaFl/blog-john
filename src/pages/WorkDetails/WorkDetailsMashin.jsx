@@ -157,7 +157,7 @@ export const WorkDetailsMashin = ({ work }) => {
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
                 <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm"
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA]"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
                   onMouseLeave={() => !isMobile && setHoveredIndex(null)}
                 >
@@ -179,8 +179,8 @@ export const WorkDetailsMashin = ({ work }) => {
                   {/* ПЛАШКИ (14% по бокам) */}
                   {isGirlProject && (
                     <>
-                      <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                      <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 left-0 bottom-0 w-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 bottom-0 w-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
                     </>
                   )}
                 </div>
