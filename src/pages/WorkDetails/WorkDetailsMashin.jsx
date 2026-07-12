@@ -96,49 +96,41 @@ export const WorkDetailsMashin = ({ work }) => {
             );
 
           if (item.type === "video") {
-            // const isHovered =hoveredIndex === index;
-
             return (
               <div
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm"
-                  onMouseEnter={() => {
-                    if (!isMobile && !isTouchDevice) {
-                      setHoveredIndex(index);
-                      // Прямой вызов play() в дополнение к эффекту для мгновенной реакции
-                      videoRefs.current[index]?.play().catch(() => {});
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (!isMobile && !isTouchDevice) {
-                      setHoveredIndex(null);
-                      if (videoRefs.current[index]) {
-                        videoRefs.current[index].pause();
-                        videoRefs.current[index].currentTime = 0;
-                      }
-                    }
-                  }}
-                >
+                <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
+                  {/* Мобильная версия: статичная картинка */}
                   {isMobile || isTouchDevice ? (
-                    // Мобильная версия: статичная картинка
                     <img
                       src={item.img}
                       alt="Preview"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover block"
                     />
                   ) : (
-                    // Десктопная версия: видео
+                    /* Десктопная версия: видео с постером */
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
                       src={item.video}
-                      poster={item.img} // Красивая заглушка, пока видео загружается
-                      className="w-full h-full object-cover"
+                      poster={item.img} // Тот самый первый кадр
+                      className="w-full h-full object-cover block"
                       playsInline
                       muted
-                      loop
+                      preload="metadata" // Загружаем только метаданные, чтобы не грузить лишнее
+                      onMouseEnter={(e) => {
+                        // Добавляем проверку, готов ли элемент
+                        if (e.target.readyState >= 2) {
+                          e.target
+                            .play()
+                            .catch((err) => console.error("Play error:", err));
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.pause();
+                        e.target.currentTime = 0;
+                      }}
                     />
                   )}
                 </div>
