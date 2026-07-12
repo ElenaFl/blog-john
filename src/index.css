@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  
   --bg: #FBFBFA;      /* мягкий молочный шелк вместо стерильного белого */
   --text: #222222;    /* бархатный матовый графит для основного текста */
   --text-h: #1A1A1A;  /* мягкий глубокий уголь для всех заголовков */
@@ -22,6 +21,7 @@
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
+  /* Базовый шрифт на десктопе аккуратный (18px) */
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light;
@@ -32,8 +32,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* Базовый шрифт для элементов интерфейса на мобилке (16px), 
+     чтобы навигация и шапка оставались миниатюрными и не ломали сетку */
   @media (max-width: 1024px) {
-    font-size: 17px;
+    font-size: 16px;
   }
 }
 
@@ -60,7 +62,7 @@ video {
 }
 
 /* =========================================================
-                        АНИМАЦИИ
+                          АНИМАЦИИ
    ========================================================= */
 @keyframes fadeIn {
   from { opacity: 0; }

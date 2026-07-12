@@ -56,13 +56,15 @@ export const PostDetails = () => {
               post.tags.map((tag, index) => <span key={index}>{tag} </span>)}
           </span>
         </div>
+
         {/* ===================================================================
-            ИСПРАВЛЕНИЕ: Выводим текст напрямую. Класс whitespace-pre-line сам 
-            сделает всю работу по отображению абзацев и пустых строк!
-            =============================================================== */}
+            ИСПРАВЛЕНИЕ: Мы задали явный, невероятно комфортный и адаптивный 
+            размер текста статьи. Текст будет 18px на мобильных телефонах 
+            и плавно расширится до 20px на планшетах и компьютерах!
+            =================================================================== */}
         <div
           style={{ textAlign: "justify" }}
-          className="whitespace-pre-line text-base leading-relaxed opacity-95 custom-article-container custom-paragraph text-justify"
+          className="whitespace-pre-line text-[18px] sm:text-[20px] leading-relaxed opacity-95 custom-article-container custom-paragraph text-justify"
         >
           {post.description}
         </div>

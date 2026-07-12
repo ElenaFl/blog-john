@@ -11,7 +11,8 @@ const variantStyles = {
     infoWrapper: "flex gap-2 mb-4 flex-nowrap",
     date: "mb-4 text-lg",
     tags: "text-lg",
-    description: "whitespace-pre-line sm:text-[17px] line-clamp-3 text-[#444444]",
+    description:
+      "whitespace-pre-line sm:text-[17px] line-clamp-3 text-[#444444]",
   },
   work: {
     container:
@@ -28,7 +29,7 @@ const variantStyles = {
   },
   postBlog: {
     container:
-      "pt-6 pb-6 sm:pt-8 sm:pb-7 border-b border-gray-200/40 bg-[#FBFBFA]",
+      "pt-6 pb-6 sm:pt-8 sm:pb-7 border-b border-gray-200 bg-[#FBFBFA]",
     title:
       "text-[26px]/[30px] sm:text-[30px] mb-3 sm:mb-4 font-bold text-[#1A1A1A]",
     image: "hidden",
@@ -79,11 +80,7 @@ export const Card = ({
               передав ему исходный класс стилей s.image. Скелетон будет мерцать, 
               пока картинка грузится, а потом плавно её проявит! */}
           {img && (
-            <ImageWithSkeleton 
-              src={img} 
-              alt={title} 
-              className={s.image} 
-            />
+            <ImageWithSkeleton src={img} alt={title} className={s.image} />
           )}
 
           {videoSrc && isHovered && (

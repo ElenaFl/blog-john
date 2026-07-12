@@ -34,20 +34,36 @@ export const Blog = () => {
   }, []);
 
   return (
-  <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4 mb-6 sm:mb-8 relative">
+    <div className="sm:max-w-[858px] ml-auto mr-auto pt-6 sm:pt-36 pl-4 pr-4 mb-6 sm:mb-8 relative">
       {/* ХЕДЕР БЛОГА */}
-      <div className="flex items-center justify-between mt-3 sm:mt-[18px] mb-8 border-b border-gray-200/40 pb-8">
+      <div className="flex items-center justify-between mt-3 sm:mt-[18px] mb-8 pb-8">
         <h1 className="text-3xl sm:text-[44px] font-bold text-black tracking-tight">
           Blog
         </h1>
 
+        {/* Улучшенная кнопка подписки со стильным анимированным SVG-конвертиком */}
         <button
           type="button"
           onClick={() => setIsSubscribeOpen(true)}
           className="min-[1127px]:hidden flex items-center justify-center w-9 h-9 rounded-full bg-[#222222] text-white shadow-md active:scale-95 transition-transform cursor-pointer"
           title="Подписаться"
         >
-          ✉️
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="1.8" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="w-4.5 h-4.5 text-white animate-bounce-horizontal"
+          >
+            {/* Внешний прямоугольник конверта */}
+            <rect x="2" y="4" width="20" height="16" rx="3" />
+            
+            {/* Тонкие, выразительные внутренние складки (клапан конверта) */}
+            <path d="M22 6l-10 7L2 6" />
+          </svg>
         </button>
       </div>
 
