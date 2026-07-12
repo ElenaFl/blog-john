@@ -33,7 +33,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
-    font-size: 16px;
+    font-size: 17px;
   }
 }
 
@@ -96,12 +96,6 @@ video {
 .animate-bounce-horizontal {
   animation: bounceHorizontal 2.2s ease-in-out infinite;
 }
-
-/* абзацы внутри статьи, отступ в 24 пикселя */
-.custom-article-text {
-  text-indent: 24px;
-}
-
 
 /* Мягкая маска для завуалирования надписи в углу видео */
 .video-corner-mask {

@@ -62,7 +62,7 @@ export const PostDetails = () => {
             =============================================================== */}
         <div
           style={{ textAlign: "justify" }}
-          className="whitespace-pre-line text-base sm:text-[17px] leading-relaxed opacity-95 custom-article-container custom-paragraph text-justify"
+          className="whitespace-pre-line text-base leading-relaxed opacity-95 custom-article-container custom-paragraph text-justify"
         >
           {post.description}
         </div>
