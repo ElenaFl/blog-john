@@ -110,7 +110,7 @@ export const WorkDetailsMashin = ({ work }) => {
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
                 <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm cursor-none group"
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden bg-[#FBFBFA] cursor-none group"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
                   onMouseLeave={() => {
                     !isMobile && setGalleryCoords({ x: -100, y: -100 });
@@ -138,6 +138,14 @@ export const WorkDetailsMashin = ({ work }) => {
                     shouldPlay={hoveredIndex === index}
                     isMuted={isMuted}
                   />
+
+                  {/* 3. ВОЗВРАЩАЕМ ПЛАШКИ (Z-Index 20, чтобы они были поверх видео) */}
+                  {!isMobile && (
+                    <>
+                      <div className="absolute top-0 left-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    </>
+                  )}
 
                   {/* КАСТОМНЫЙ КУБИК (Курсор) */}
                   {hoveredIndex === index && galleryCoords.x > 0 && (

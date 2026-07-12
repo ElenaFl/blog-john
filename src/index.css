@@ -163,14 +163,15 @@ video {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 3D Куб */
+
+/* Контейнер кубика */
 .gallery-3d-cube-container {
   position: absolute;
-  perspective: 600px;
+  perspective: 600px; /* Важно для 3D */
   width: 28px;
   height: 28px;
   z-index: 50;
-  transform: translate(-50%, -50%); /* Центрирование курсора */
+  pointer-events: none;
 }
 
 .cube-3d-core {
@@ -178,22 +179,21 @@ video {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
+  animation: rotate3DBox 4s infinite linear;
 }
 
-/* Ваши стили граней */
 .cube-face {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(220, 38, 6, 0.75);
+  width: 28px; /* Жестко задаем размер */
+  height: 28px;
+  background: rgba(220, 38, 6, 0.4); /* Прозрачность 0.4 для глубины */
   border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow: inset 0 0 4px rgba(255, 0, 0, 0.5);
 }
 
-/* Свечение кнопки */
-.gallery-mute-mask-desktop {
-  backdrop-filter: blur(12px);
-  background: radial-gradient(circle, rgba(234, 179, 8, 0.95) 0%, rgba(234, 179, 8, 0.7) 40%, rgba(234, 179, 8, 0) 70%);
+@keyframes rotate3DBox {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
 }
 
 .cursor-ring {
