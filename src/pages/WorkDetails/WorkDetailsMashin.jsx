@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
-export const WorkDetailMashin = ({ work }) => {
+export const WorkDetailsMashin = ({ work }) => {
   const navigate = useNavigate();
   const videoRefs = useRef({});
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { WorkDetailsDefault } from "./WorkDetailsDefault";
-import { WorkDetailsMashin } from "./WorkDetailsMashin";
+import { WorkDetailsDefault } from "./WorkDetailsDefault.jsx";
+import { WorkDetailsMashin } from "./WorkDetailsMashin.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
