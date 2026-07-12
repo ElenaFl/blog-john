@@ -189,11 +189,11 @@ video {
 /* Контейнер кубика */
 .gallery-3d-cube-container {
   position: absolute;
-  perspective: 600px; /* Важно для 3D */
   width: 28px;
   height: 28px;
   z-index: 50;
   pointer-events: none;
+  perspective: 100px; /* Эффект перспективы */
 }
 
 .cube-3d-core {
@@ -201,32 +201,32 @@ video {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  animation: rotate3DBox 4s infinite linear;
+  animation: rotate3DBox 6s infinite linear; /* Медленное, плавное вращение */
 }
 
+/* Красные каркасные грани */
 .cube-face {
   position: absolute;
   width: 28px;
   height: 28px;
-  background: rgba(234, 179, 8, 0.1); /* Полупрозрачное золото */
-  border: 1.5px solid rgba(234, 179, 8, 0.8); /* Яркий контур */
-  box-shadow: 0 0 10px rgba(234, 179, 8, 0.6); /* Свечение */
+  background: rgba(220, 38, 6, 0.2); /* Легкий красный оттенок */
+  border: 1px solid rgba(220, 38, 6, 0.9); /* Яркий красный каркас */
 }
 
-.cube-3d-core {
-  animation:
-    rotate3DBox 4s infinite linear,
-    pulseGlow 2s infinite ease-in-out;
+@keyframes rotate3DBox {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
 }
 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 5px rgba(234, 179, 8, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.9));
-  }
+/* Кнопка динамика */
+.video-mute-btn {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.video-mute-btn:hover {
+  background: rgba(46, 16, 101, 0.9); /* Темно-фиолетовый при наведении */
 }
 
 .cursor-ring {

@@ -107,7 +107,7 @@ export const WorkDetailsMashin = ({ work }) => {
             return (
               <div
                 key={index}
-                className="w-full flex justify-center mb-10 max-sm:mb-6"
+                className="w-full flex justify-center mb-10 max-sm:mb-6 mt-3 sm:mt-6"
               >
                 <div
                   className="relative w-full sm:w-[600px] aspect-video overflow-hidden bg-[#FBFBFA] cursor-none group"
@@ -150,13 +150,14 @@ export const WorkDetailsMashin = ({ work }) => {
                   {/* КАСТОМНЫЙ КУБИК (Курсор) */}
                   {hoveredIndex === index && galleryCoords.x > 0 && (
                     <div
-                      className="gallery-3d-cube-container pointer-events-none"
-                      style={{ left: galleryCoords.x, top: galleryCoords.y }}
+                      className="gallery-3d-cube-container"
+                      style={{
+                        left: galleryCoords.x,
+                        top: galleryCoords.y,
+                        transform: "translate(-50%, -50%)",
+                      }}
                     >
-                      <div
-                        className="cube-3d-core"
-                        style={{ animation: "rotate3DBox 4s infinite linear" }}
-                      >
+                      <div className="cube-3d-core">
                         <div
                           className="cube-face"
                           style={{
@@ -179,6 +180,18 @@ export const WorkDetailsMashin = ({ work }) => {
                           className="cube-face"
                           style={{
                             transform: "rotateY(-90deg) translateZ(11px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateX(90deg) translateZ(11px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateX(-90deg) translateZ(11px)",
                           }}
                         />
                       </div>
@@ -206,7 +219,7 @@ export const WorkDetailsMashin = ({ work }) => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-5 h-5 text-white"
+                        className="w-4 h-4 text-gray-300"
                       >
                         <path
                           strokeLinecap="round"
