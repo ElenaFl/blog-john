@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-// Импортируем наш умный загрузчик картинок с эффектом плавного скелетона
 import { ImageWithSkeleton } from "../ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 const variantStyles = {
@@ -56,31 +55,54 @@ export const Card = ({
 }) => {
   const { id, title, img, videoSrc, tags, description } = data;
   const [isHovered, setIsHovered] = useState(false);
-  const videoRef = useRef(null);
-
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
+  const videoRef = useRef(null);
   const s = variantStyles[variant] || variantStyles.post;
+
+  // Определение тач-устройств (мобильные телефоны, планшеты)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasTouch =
+        "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia("(pointer: coarse)").matches;
+      setIsTouchDevice(hasTouch);
+    }
+  }, []);
+
+  // Включаем видео-эффекты только если это десктоп с мышкой
+  const showVideoEffect = videoSrc && isHovered && !isTouchDevice;
 
   useEffect(() => {
     if (videoRef.current) {
-      if (isHovered) {
+      if (showVideoEffect) {
         videoRef.current.muted = isMuted;
-        videoRef.current.play().catch((err) => console.log(err));
+        videoRef.current
+          .play()
+          .catch((err) => console.log("Ошибка автоплея:", err));
       } else {
         videoRef.current.pause();
         videoRef.current.currentTime = 0;
       }
     }
-  }, [isHovered, isMuted]);
+  }, [showVideoEffect, isMuted]);
+
+  // Обновляем координаты мыши только на десктопах для экономии ресурсов мобильного процессора
+  const handleMouseMove = (e) => {
+    if (!isTouchDevice) {
+      setMouseCoords({ x: e.clientX, y: e.clientY });
+    }
+  };
 
   return (
     <article
       onClick={() => onOpenDetails?.(id)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={(e) => setMouseCoords({ x: e.clientX, y: e.clientY })}
-      className={`${s.container} ${variant === "work" && videoSrc ? "cursor-none" : "cursor-pointer"} transition-all duration-300 ${!videoSrc ? "hover:opacity-85" : ""} text-[#222222]`}
+      onMouseMove={handleMouseMove}
+      className={`${s.container} ${variant === "work" && videoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"} transition-all duration-300 ${!videoSrc ? "hover:opacity-85" : ""} text-[#222222]`}
     >
       {variant === "work" && (
         <div className={s.imgWrapper}>
@@ -88,10 +110,10 @@ export const Card = ({
             <ImageWithSkeleton src={img} alt={title} className={s.image} />
           )}
 
-          {}
-          {videoSrc && isHovered && (
+          {/* Видео-эффекты и кастомный курсор полностью изолированы от мобильных устройств */}
+          {showVideoEffect && (
             <>
-              {/* ВСТАВЛЯЕМ КУРСОР ЗДЕСЬ */}
+              {/* Кастомный круглый курсор (рендерится строго на ПК при наведении) */}
               <div
                 className="cursor-ring flex items-center justify-center"
                 style={{
@@ -101,6 +123,8 @@ export const Card = ({
               >
                 <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>
               </div>
+
+              {/* Умный холст-рисовальщик видео */}
               <canvas
                 ref={(canvas) => {
                   if (!canvas) return;
@@ -120,6 +144,8 @@ export const Card = ({
                 }}
                 className={`${s.video} pointer-events-none animate-fade-in`}
               />
+
+              {/* Скрытый фоновый тег видео */}
               <video
                 ref={videoRef}
                 src={videoSrc}
@@ -128,7 +154,8 @@ export const Card = ({
                 muted={isMuted}
                 className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
               />
-              {}
+
+              {/* Кнопка включения/выключения звука */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
