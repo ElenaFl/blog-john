@@ -148,57 +148,32 @@ export const WorkDetailsMashin = ({ work }) => {
                   )}
 
                   {/* КАСТОМНЫЙ КУБИК (Курсор) */}
-                  {hoveredIndex === index && galleryCoords.x > 0 && (
+                  <div className="cube-3d-core">
                     <div
-                      className="gallery-3d-cube-container"
-                      style={{
-                        left: galleryCoords.x,
-                        top: galleryCoords.y,
-                        transform: "translate(-50%, -50%)",
-                      }}
-                    >
-                      {/* Анимация подхватится автоматически из CSS-класса */}
-                      <div className="cube-3d-core">
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateY(0deg) translateZ(10px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateY(180deg) translateZ(10px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateY(90deg) translateZ(10px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateY(-90deg) translateZ(10px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateX(90deg) translateZ(10px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateX(-90deg) translateZ(10px)",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
+                      className="cube-face"
+                      style={{ transform: "rotateY(0deg) translateZ(10px)" }}
+                    />
+                    <div
+                      className="cube-face"
+                      style={{ transform: "rotateY(90deg) translateZ(10px)" }}
+                    />
+                    <div
+                      className="cube-face"
+                      style={{ transform: "rotateY(180deg) translateZ(10px)" }}
+                    />
+                    <div
+                      className="cube-face"
+                      style={{ transform: "rotateY(-90deg) translateZ(10px)" }}
+                    />
+                    <div
+                      className="cube-face"
+                      style={{ transform: "rotateX(90deg) translateZ(10px)" }}
+                    />
+                    <div
+                      className="cube-face"
+                      style={{ transform: "rotateX(-90deg) translateZ(10px)" }}
+                    />
+                  </div>
                   {/* КНОПКА ДИНАМИКА со стилем свечения */}
                   {!isMobile && (
                     <button
@@ -220,7 +195,7 @@ export const WorkDetailsMashin = ({ work }) => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-3 h-3 text-gray-300"
+                        className="w-6 h-6 text-gray-300"
                       >
                         <path
                           strokeLinecap="round"
