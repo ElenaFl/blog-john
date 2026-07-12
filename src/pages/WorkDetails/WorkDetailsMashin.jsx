@@ -209,7 +209,7 @@ export const WorkDetailsMashin = ({ work }) => {
                       className="video-mute-btn absolute z-40 p-2.5 rounded-full flex items-center justify-center w-10 h-10 cursor-pointer"
                       style={{
                         bottom: isGirlProject ? "20px" : "20px",
-                        right: isGirlProject ? "66px" : "66px",
+                        right: isGirlProject ? "76px" : "76px",
                       }}
                       title={isMuted ? "Включить звук" : "Выключить звук"}
                     >
@@ -220,7 +220,7 @@ export const WorkDetailsMashin = ({ work }) => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="w-4 h-4 text-gray-300"
+                        className="w-3 h-3 text-gray-300"
                       >
                         <path
                           strokeLinecap="round"
