@@ -7,29 +7,46 @@ export const WorkDetailsMashin = ({ work }) => {
   const videoRefs = useRef({});
 
   // 1. Инициализируем состояние БЕЗ useEffect
-  const [isMobile, setIsMobile] = useState(() => 
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 768px)").matches
+      : false,
   );
 
-  const [isTouchDevice, setIsTouchDevice] = useState(() => 
-    typeof window !== "undefined" 
-      ? ("ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches) 
-      : false
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? "ontouchstart" in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia("(pointer: coarse)").matches
+      : false,
   );
+
+  // Cостояние для отслеживания наведения на  видео
+  const [hoveredVideos, setHoveredVideos] = useState({});
 
   // 2. Эффект только для подписки на изменения
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-      setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches);
+      setIsTouchDevice(
+        "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0 ||
+          window.matchMedia("(pointer: coarse)").matches,
+      );
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const tagsArray = Array.isArray(work.tags) ? work.tags : typeof work.tags === "string" ? JSON.parse(work.tags || "[]") : [];
-  const formattedTags = tagsArray.map(t => `#${t.startsWith("#") ? t.slice(1) : t}`).join(" ");
+  const tagsArray = Array.isArray(work.tags)
+    ? work.tags
+    : typeof work.tags === "string"
+      ? JSON.parse(work.tags || "[]")
+      : [];
+  const formattedTags = tagsArray
+    .map((t) => `#${t.startsWith("#") ? t.slice(1) : t}`)
+    .join(" ");
 
   if (!work) return null;
 
@@ -52,46 +69,114 @@ export const WorkDetailsMashin = ({ work }) => {
             {work.date}
           </span>
           <span className="hidden sm:inline text-gray-300">|</span>
-          <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">{formattedTags}</span>
+          <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">
+            {formattedTags}
+          </span>
         </div>
 
         {work.gallery?.map((item, index) => {
           if (item.type === "heading")
-            return <h4 key={index} className="text-xl sm:text-2xl font-bold mt-6 mb-4 text-left">{item.text}</h4>;
-          
+            return (
+              <h4
+                key={index}
+                className="text-xl sm:text-2xl font-bold mt-6 mb-4 text-left"
+              >
+                {item.text}
+              </h4>
+            );
+
           if (item.type === "text")
-            return <p key={index} className="text-[18px] sm:text-[20px] leading-relaxed  t mb-4">{item.text}</p>;
+            return (
+              <p
+                key={index}
+                className="text-[18px] sm:text-[20px] leading-relaxed  t mb-4"
+              >
+                {item.text}
+              </p>
+            );
+
+          // if (item.type === "video") {
+          //   return (
+          //     <div key={index} className="w-full rounded-2xl mb-6">
+          //       <div
+          //         onMouseEnter={() => {
+          //           if (!isMobile && !isTouchDevice) videoRefs.current[index]?.play().catch(() => {});
+          //         }}
+          //         onMouseLeave={() => {
+          //           if (videoRefs.current[index]) {
+          //             videoRefs.current[index].pause();
+          //             videoRefs.current[index].currentTime = 0;
+          //           }
+          //         }}
+          //         className="relative max-w-3xl aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
+          //       >
+          //         {item.img && <img src={item.img} alt="Preview" className=" mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6 rounded-2xl w-full h-full object-cover"/>}
+          //         <video
+          //           ref={(el) => (videoRefs.current[index] = el)}
+          //           src={item.video}
+          //           playsInline
+          //           muted
+          //           className="hidden"
+          //         />
+          //       </div>
+          //     </div>
+          //   );
+          // }
 
           if (item.type === "video") {
+            const isHovered = !!hoveredVideos[index];
+
             return (
               <div key={index} className="w-full rounded-2xl mb-6">
                 <div
                   onMouseEnter={() => {
-                    if (!isMobile && !isTouchDevice) videoRefs.current[index]?.play().catch(() => {});
-                  }}
-                  onMouseLeave={() => {
-                    if (videoRefs.current[index]) {
-                      videoRefs.current[index].pause();
-                      videoRefs.current[index].currentTime = 0;
+                    if (!isMobile && !isTouchDevice) {
+                      setHoveredVideos((prev) => ({ ...prev, [index]: true }));
+                      videoRefs.current[index]?.play().catch(() => {});
                     }
                   }}
-                  className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
+                  onMouseLeave={() => {
+                    if (!isMobile && !isTouchDevice) {
+                      setHoveredVideos((prev) => ({ ...prev, [index]: false }));
+                      if (videoRefs.current[index]) {
+                        videoRefs.current[index].pause();
+                        videoRefs.current[index].currentTime = 0;
+                      }
+                    }
+                  }}
+                  className="relative w-full aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer"
                 >
-                  {item.img && <img src={item.img} alt="Preview" className="max-w-3xl mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6"/>}
-                  <video
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    src={item.video}
-                    playsInline
-                    muted
-                    className="hidden"
+                  {/* Картинка всегда видна, если не наведен курсор, либо если это мобилка */}
+                  <img
+                    src={item.img}
+                    alt="Preview"
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"}`}
                   />
+
+                  {/* Видео показывается только на десктопе при наведении */}
+                  {!isMobile && !isTouchDevice && (
+                    <video
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      src={item.video}
+                      playsInline
+                      muted
+                      loop
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
             );
           }
 
           if (item.type === "image")
-            return <ImageWithSkeleton key={index} src={item.src} className="w-full h-auto rounded-md mb-6" />;
+            return (
+              <ImageWithSkeleton
+                key={index}
+                src={item.src}
+                className="w-full h-auto rounded-md mb-6"
+              />
+            );
 
           return null;
         })}
