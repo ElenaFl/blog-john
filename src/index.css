@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #FBFBFA;      /* мягкий молочный шелк вместо стерильного белого */
-  --text: #222222;    /* бархатный матовый графит для основного текста */
-  --text-h: #1A1A1A;  /* мягкий глубокий уголь для всех заголовков */
-  --border: #EBEAE7;  /* мягкая линия границ */
-  --code-bg: #F5F4EE;
-  
+  --bg: #fbfbfa; /* мягкий молочный шелк вместо стерильного белого */
+  --text: #222222; /* бархатный матовый графит для основного текста */
+  --text-h: #1a1a1a; /* мягкий глубокий уголь для всех заголовков */
+  --border: #ebeae7; /* мягкая линия границ */
+  --code-bg: #f5f4ee;
+
   /* цвет кнопки подписки */
-  --accent: #00A8CC;  
-  --accent-bg: rgba(0, 168, 204, 0.06);     /* полупрозрачная подсветка */
+  --accent: #00a8cc;
+  --accent-bg: rgba(0, 168, 204, 0.06); /* полупрозрачная подсветка */
   --accent-border: rgba(0, 168, 204, 0.3); /* рамки фокуса */
   --social-bg: rgba(245, 244, 238, 0.5);
-  
+
   /* тени для эффекта парения элементов */
   --shadow:
     rgba(0, 0, 0, 0.04) 0 10px 25px -3px, rgba(0, 0, 0, 0.01) 0 4px 10px -2px;
@@ -45,7 +45,12 @@ html {
 }
 
 /* заголовки, мягкий угольный цвет */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-h);
   letter-spacing: -0.02em;
 }
@@ -65,8 +70,12 @@ video {
                           АНИМАЦИИ
    ========================================================= */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {
@@ -91,8 +100,13 @@ video {
 
 /* покачивание конвертика */
 @keyframes bounceHorizontal {
-  0%, 100% { transform: translateX(0) rotate(90deg); }
-  50% { transform: translateX(4px) rotate(90deg); }
+  0%,
+  100% {
+    transform: translateX(0) rotate(90deg);
+  }
+  50% {
+    transform: translateX(4px) rotate(90deg);
+  }
 }
 
 .animate-bounce-horizontal {
@@ -106,11 +120,16 @@ video {
   right: 16%;
   width: 15%;
   height: 16%;
-  background: linear-gradient(135deg, rgba(224, 130, 24, 0) 0%, rgba(224, 130, 24, 0) 65%, rgba(224, 130, 24, 0.4) 85%, rgba(224, 130, 24, 0.98) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(224, 130, 24, 0) 0%,
+    rgba(224, 130, 24, 0) 65%,
+    rgba(224, 130, 24, 0.4) 85%,
+    rgba(224, 130, 24, 0.98) 100%
+  );
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(6px);
 }
-
 
 /* Базовый контейнер для летающего 3D курсора (куб/лотос) */
 .floating-3d-cursor {
@@ -132,8 +151,12 @@ video {
 
 /* 3D-вращение лотоса по осям */
 @keyframes spinLotus {
-  0% { transform: rotateX(25deg) rotateY(0deg) rotateZ(0deg); }
-  100% { transform: rotateX(25deg) rotateY(0deg) rotateZ(360deg); }
+  0% {
+    transform: rotateX(25deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(25deg) rotateY(0deg) rotateZ(360deg);
+  }
 }
 
 /* Геометрический лепесток лотоса */
@@ -142,7 +165,7 @@ video {
   width: 10px;
   height: 20px;
   background: linear-gradient(to top, #eab308, #facc15);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   transform-origin: bottom center;
   border: 1px solid rgba(202, 138, 4, 0.4);
 }
@@ -154,7 +177,7 @@ video {
   height: 10px;
   background: #fef08a;
   border-radius: 50%;
-  transform: translateZ(8px); 
+  transform: translateZ(8px);
   box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
 }
 
@@ -162,7 +185,6 @@ video {
 .video-mute-btn {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Контейнер кубика */
 .gallery-3d-cube-container {
@@ -184,16 +206,27 @@ video {
 
 .cube-face {
   position: absolute;
-  width: 28px; /* Жестко задаем размер */
+  width: 28px;
   height: 28px;
-  background: rgba(220, 38, 6, 0.4); /* Прозрачность 0.4 для глубины */
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 4px rgba(255, 0, 0, 0.5);
+  background: rgba(234, 179, 8, 0.1); /* Полупрозрачное золото */
+  border: 1.5px solid rgba(234, 179, 8, 0.8); /* Яркий контур */
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.6); /* Свечение */
 }
 
-@keyframes rotate3DBox {
-  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+.cube-3d-core {
+  animation:
+    rotate3DBox 4s infinite linear,
+    pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(234, 179, 8, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.9));
+  }
 }
 
 .cursor-ring {
@@ -206,24 +239,35 @@ video {
   z-index: 50;
   transform: translate(-50%, -50%);
   /* Добавляем легкое свечение, чтобы он выделялся на любом фоне */
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); 
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   animation: pulse-ring 2s infinite;
 }
 
 @keyframes pulse-ring {
-  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
-  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
-  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.9;
+  }
 }
 
+/* Кнопка динамика: прозрачная база, фиолетовый ховер */
+.video-mute-btn {
+  background: rgba(0, 0, 0, 0.15); /* Прозрачная основа */
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-
-
-
-
-
-
-
-
-
-
+.video-mute-btn:hover {
+  background: rgba(55, 33, 77, 0.8); /* Темно-фиолетовый при ховере */
+  border-color: rgba(167, 139, 250, 0.5);
+  transform: scale(1.1);
+}
