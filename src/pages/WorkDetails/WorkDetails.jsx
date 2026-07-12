@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// Импортируем наш умный загрузчик картинок с плавным скелетоном
-import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
+// Импортируем наш умный загрузчик картинок с плавным скелетоном (исправленный относительный путь)
+import ImageWithSkeleton from "../components/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -12,13 +12,15 @@ export const WorkDetails = () => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Интерактивные состояния для главного видео
+  // Ссылки на элементы для главного видео
   const mainVideoRef = useRef(null);
+  const mainCanvasRef = useRef(null);
   const [isMainHovered, setIsMainHovered] = useState(false);
   const [mainCoords, setMainCoords] = useState({ x: 0, y: 0 });
 
-  // Интерактивные состояния для видео в галерее
+  // Ссылки на элементы для видео в галерее
   const galleryVideoRef = useRef(null);
+  const galleryCanvasRef = useRef(null);
   const [isGalleryHovered, setIsGalleryHovered] = useState(false);
   const [galleryCoords, setGalleryCoords] = useState({ x: 0, y: 0 });
 
@@ -58,8 +60,7 @@ export const WorkDetails = () => {
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const apiUrl =
-          import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
         const response = await fetch(`${apiUrl}/api/works/${id}`);
         if (!response.ok) throw new Error("Ошибка загрузки");
         const data = await response.json();
@@ -71,37 +72,94 @@ export const WorkDetails = () => {
     fetchWork();
   }, [id]);
 
-  // Управление главным фоновым видео (только десктопы)
+  // =========================================================================
+  // УПРАВЛЕНИЕ И ВОСПРОИЗВЕДЕНИЕ ВИДЕО (Только на десктопах)
+  // =========================================================================
   const showMainVideo = work?.detailVideoSrc && isMainHovered && !isTouchDevice;
   useEffect(() => {
     const video = mainVideoRef.current;
-    if (!video || !showMainVideo) return;
+    if (!video) return;
 
-    video
-      .play()
-      .catch((err) =>
-        console.log("Автоплей главного видео заблокирован:", err),
-      );
-
-    return () => {
+    if (showMainVideo) {
+      video.muted = isMuted;
+      video.play().catch((err) => console.log("Автоплей главного видео заблокирован:", err));
+    } else {
       video.pause();
       video.currentTime = 0;
-    };
-  }, [showMainVideo]);
+    }
+  }, [showMainVideo, isMuted]);
 
-  // Управление видео в галерее (только десктопы)
   const showGalleryVideo = work?.videoSrc && isGalleryHovered && !isTouchDevice;
   useEffect(() => {
     const video = galleryVideoRef.current;
-    if (!video || !showGalleryVideo) return;
+    if (!video) return;
 
-    video
-      .play()
-      .catch((err) => console.log("Автоплей видео галереи заблокирован:", err));
-
-    return () => {
+    if (showGalleryVideo) {
+      video.muted = isMuted;
+      video.play().catch((err) => console.log("Автоплей видео галереи заблокирован:", err));
+    } else {
       video.pause();
       video.currentTime = 0;
+    }
+  }, [showGalleryVideo, isMuted]);
+
+  // =========================================================================
+  // ВЫСОКОПРОИЗВОДИТЕЛЬНАЯ ОТРИСОВКА НА CANVAS (60 FPS)
+  // Эти эффекты больше не перезапускаются при движении мыши!
+  // =========================================================================
+  useEffect(() => {
+    const video = mainVideoRef.current;
+    const canvas = mainCanvasRef.current;
+    if (!video || !canvas || !showMainVideo) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId;
+    const render = () => {
+      if (video.paused || video.ended) return;
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+      }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    video.addEventListener("play", render);
+    if (!video.paused) render();
+
+    return () => {
+      video.removeEventListener("play", render);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [showMainVideo]);
+
+  useEffect(() => {
+    const video = galleryVideoRef.current;
+    const canvas = galleryCanvasRef.current;
+    if (!video || !canvas || !showGalleryVideo) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId;
+    const render = () => {
+      if (video.paused || video.ended) return;
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+      }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    video.addEventListener("play", render);
+    if (!video.paused) render();
+
+    return () => {
+      video.removeEventListener("play", render);
+      cancelAnimationFrame(animationFrameId);
     };
   }, [showGalleryVideo]);
 
@@ -123,7 +181,7 @@ export const WorkDetails = () => {
     setIsMuted((prev) => !prev);
   };
 
-  // 1. ПЕРВАЯ ТОЧКА ОСТАНОВА: Если данные еще не загружены, показываем аккуратное состояние загрузки
+  // Если данные еще не загружены, показываем аккуратное состояние загрузки
   if (!work) {
     return (
       <div className="text-center py-24 text-gray-400 text-sm">
@@ -132,13 +190,10 @@ export const WorkDetails = () => {
     );
   }
 
-  // 2. БЕЗОПАСНЫЙ РАЗБОР ДАННЫХ (После того, как работа гарантированно загрузилась)
+  // Безопасный разбор галереи и тегов проекта
   let galleryImages = [];
   try {
-    galleryImages =
-      typeof work.gallery === "string"
-        ? JSON.parse(work.gallery)
-        : work.gallery || [];
+    galleryImages = typeof work.gallery === "string" ? JSON.parse(work.gallery) : (work.gallery || []);
   } catch (e) {
     console.error("Ошибка парсинга галереи проекта:", e);
   }
@@ -146,10 +201,9 @@ export const WorkDetails = () => {
   const tagsArray = Array.isArray(work.tags)
     ? work.tags
     : typeof work.tags === "string"
-      ? JSON.parse(work.tags || "[]")
-      : [];
+    ? JSON.parse(work.tags || "[]")
+    : [];
 
-  // 3. ОСНОВНОЙ РЕНДЕР КОМПОНЕНТА
   return (
     <div className="pt-12 sm:pt-36 bg-transparent">
       <div className="sm:max-w-[858px] ml-auto mr-auto pl-4 pr-4 sm:pl-6 sm:pr-6 mb-16">
@@ -161,7 +215,7 @@ export const WorkDetails = () => {
           ← GO BACK
         </button>
 
-        {/* Заголовок проекта (Золотой стандарт типографии) */}
+        {/* Заголовок проекта */}
         <h2 className="mb-4 sm:mb-6 text-[28px] sm:text-[38px] font-bold leading-tight tracking-tight text-[var(--text-h)]">
           {work.title}
         </h2>
@@ -172,9 +226,7 @@ export const WorkDetails = () => {
           <span className="hidden sm:inline text-gray-300">|</span>
           <span className="text-[var(--accent)]">
             {tagsArray.map((tag, index) => (
-              <span key={index} className="mr-2">
-                #{tag}
-              </span>
+              <span key={index} className="mr-2">#{tag}</span>
             ))}
           </span>
         </div>
@@ -185,9 +237,7 @@ export const WorkDetails = () => {
           onMouseLeave={() => setIsMainHovered(false)}
           onMouseMove={handleMainMouseMove}
           className={`relative w-full aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200/40 bg-gray-100 ${
-            work.detailVideoSrc && !isTouchDevice
-              ? "cursor-none"
-              : "cursor-pointer"
+            work.detailVideoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"
           }`}
         >
           <ImageWithSkeleton
@@ -201,7 +251,7 @@ export const WorkDetails = () => {
             <>
               {/* Кастомный круглый курсор */}
               <div
-                className="cursor-ring flex items-center justify-center"
+                className="cursor-ring pointer-events-none fixed z-50 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 border border-white/60 rounded-full w-10 h-10 transition-transform duration-75 ease-out"
                 style={{
                   left: `${mainCoords.x}px`,
                   top: `${mainCoords.y}px`,
@@ -212,22 +262,7 @@ export const WorkDetails = () => {
 
               {/* Умный холст */}
               <canvas
-                ref={(canvas) => {
-                  if (!canvas) return;
-                  const ctx = canvas.getContext("2d");
-                  const video = mainVideoRef.current;
-                  if (ctx && video) {
-                    const renderLoop = () => {
-                      if (video.paused || video.ended) return;
-                      canvas.width = video.videoWidth || 320;
-                      canvas.height = video.videoHeight || 180;
-                      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                      requestAnimationFrame(renderLoop);
-                    };
-                    video.addEventListener("play", renderLoop);
-                    if (!video.paused) renderLoop();
-                  }
-                }}
+                ref={mainCanvasRef}
                 className="absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in"
               />
 
@@ -284,10 +319,7 @@ export const WorkDetails = () => {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {galleryImages.map((imagePath, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video"
-                >
+                <div key={idx} className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video">
                   <ImageWithSkeleton
                     src={imagePath}
                     alt={`Галерея ${idx + 1}`}
@@ -321,8 +353,9 @@ export const WorkDetails = () => {
 
               {showGalleryVideo && (
                 <>
+                  {/* Кастомный круглый курсор для интерактивного превью */}
                   <div
-                    className="cursor-ring flex items-center justify-center"
+                    className="cursor-ring pointer-events-none fixed z-50 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 border border-white/60 rounded-full w-10 h-10 transition-transform duration-75 ease-out"
                     style={{
                       left: `${galleryCoords.x}px`,
                       top: `${galleryCoords.y}px`,
@@ -331,13 +364,20 @@ export const WorkDetails = () => {
                     <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>
                   </div>
 
+                  {/* Отрисовка интерактивного превью на Canvas */}
+                  <canvas
+                    ref={galleryCanvasRef}
+                    className="absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in"
+                  />
+
+                  {/* Скрытое фоновое тег-видео для галереи */}
                   <video
                     ref={galleryVideoRef}
                     src={work.videoSrc}
                     playsInline
                     autoPlay
                     muted={isMuted}
-                    className="absolute top-0 left-0 w-full h-full object-cover z-20 animate-fade-in"
+                    className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
                   />
                 </>
               )}
