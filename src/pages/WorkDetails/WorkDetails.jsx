@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // Импортируем наш умный загрузчик картинок с плавным скелетоном (исправленный относительный путь)
-import { ImageWithSkeleton } from "../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
