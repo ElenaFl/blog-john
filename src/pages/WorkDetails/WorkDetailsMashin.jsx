@@ -101,8 +101,9 @@ export const WorkDetailsMashin = ({ work }) => {
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
+                {/* Контейнер-оболочка */}
                 <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
-                  {/* Мобильная версия: статичная картинка */}
+                  {/* 1. Если мобилка — показываем только картинку */}
                   {isMobile || isTouchDevice ? (
                     <img
                       src={item.img}
@@ -110,29 +111,35 @@ export const WorkDetailsMashin = ({ work }) => {
                       className="w-full h-full object-cover block"
                     />
                   ) : (
-                    /* Десктопная версия: видео с постером */
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      src={item.video}
-                      poster={item.img} // Тот самый первый кадр
-                      className="w-full h-full object-cover block"
-                      playsInline
-                      muted
-                      loop
-                      preload="metadata" // Загружаем только метаданные, чтобы не грузить лишнее
-                      onMouseEnter={(e) => {
-                        // Добавляем проверку, готов ли элемент
-                        if (e.target.readyState >= 2) {
+                    /* 2. Десктоп: Видео и картинка наложены друг на друга */
+                    <div className="relative w-full h-full group">
+                      {/* Картинка как фон */}
+                      <img
+                        src={item.img}
+                        alt="Preview"
+                        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+                      />
+
+                      {/* Видео */}
+                      <video
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        src={item.video}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        playsInline
+                        muted
+                        loop
+                        onMouseEnter={(e) => {
+                          // Прямой запуск
                           e.target
                             .play()
                             .catch((err) => console.error("Play error:", err));
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.pause();
-                        e.target.currentTime = 0;
-                      }}
-                    />
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.pause();
+                          e.target.currentTime = 0;
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
