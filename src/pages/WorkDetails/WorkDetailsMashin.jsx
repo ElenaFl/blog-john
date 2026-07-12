@@ -110,7 +110,7 @@ export const WorkDetailsMashin = ({ work }) => {
                 className="w-full flex justify-center mb-10 max-sm:mb-6 mt-3 sm:mt-6"
               >
                 <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden bg-[#FBFBFA] cursor-none group"
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm cursor-none group"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
                   onMouseLeave={() => {
                     !isMobile && setGalleryCoords({ x: -100, y: -100 });
@@ -125,55 +125,77 @@ export const WorkDetailsMashin = ({ work }) => {
                     });
                   }}
                 >
-                  {/* Картинка как фон */}
                   <img
                     src={item.img}
                     alt="Preview"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  {/* Видео-плеер (используем логику VideoPlayer из прошлого ответа) */}
                   <VideoPlayer
                     src={item.video}
                     shouldPlay={hoveredIndex === index}
                     isMuted={isMuted}
                   />
 
-                  {/* 3. ВОЗВРАЩАЕМ ПЛАШКИ (Z-Index 20, чтобы они были поверх видео) */}
+                  {/* ПЛАШКИ: z-20 */}
                   {!isMobile && (
                     <>
-                      <div className="absolute top-0 left-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                      <div className="absolute top-0 right-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 left-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none" />
+                      <div className="absolute top-0 right-0 bottom-0 w-[11%] bg-[#FBFBFA] z-20 pointer-events-none" />
                     </>
                   )}
 
                   {/* КАСТОМНЫЙ КУБИК (Курсор) */}
-                  <div className="cube-3d-core">
+                  {hoveredIndex === index && galleryCoords.x > 0 && (
                     <div
-                      className="cube-face"
-                      style={{ transform: "rotateY(0deg) translateZ(10px)" }}
-                    />
-                    <div
-                      className="cube-face"
-                      style={{ transform: "rotateY(90deg) translateZ(10px)" }}
-                    />
-                    <div
-                      className="cube-face"
-                      style={{ transform: "rotateY(180deg) translateZ(10px)" }}
-                    />
-                    <div
-                      className="cube-face"
-                      style={{ transform: "rotateY(-90deg) translateZ(10px)" }}
-                    />
-                    <div
-                      className="cube-face"
-                      style={{ transform: "rotateX(90deg) translateZ(10px)" }}
-                    />
-                    <div
-                      className="cube-face"
-                      style={{ transform: "rotateX(-90deg) translateZ(10px)" }}
-                    />
-                  </div>
+                      className="gallery-3d-cube-container"
+                      style={{
+                        left: `${galleryCoords.x}px`,
+                        top: `${galleryCoords.y}px`,
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    >
+                      <div className="cube-3d-core">
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(0deg) translateZ(10px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(90deg) translateZ(10px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(180deg) translateZ(10px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(-90deg) translateZ(10px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateX(90deg) translateZ(10px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateX(-90deg) translateZ(10px)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* КНОПКА ДИНАМИКА со стилем свечения */}
                   {!isMobile && (
                     <button
