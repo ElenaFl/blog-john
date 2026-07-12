@@ -129,32 +129,41 @@ export const WorkDetailsMashin = ({ work }) => {
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                {/* Контейнер имеет фиксированный aspect-video (16/9). 
-        На десктопе ограничиваем ширину через sm:w-[600px].
-        На мобилке растягиваем через w-full.
-      */}
+                {/* Контейнер с фиксированным соотношением сторон */}
                 <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
-                  {/* 1. Если мобилка — показываем только картинку */}
                   {isMobile || isTouchDevice ? (
+                    // Мобильный вариант
                     <img
                       src={item.img}
                       alt="Preview"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    /* 2. Если десктоп — показываем только видео */
+                    // Десктопный вариант
                     <video
-                      ref={(el) => (videoRefs.current[index] = el)}
+                      ref={(el) => {
+                        if (el) videoRefs.current[index] = el;
+                      }}
                       src={item.video}
-                      poster={item.img} // Показывает картинку до загрузки видео
+                      poster={item.img}
                       className="w-full h-full object-cover"
                       playsInline
-                      muted
+                      muted // Обязательно для автозапуска
                       loop
-                      onMouseEnter={(e) => e.target.play().catch(() => {})}
-                      onMouseLeave={(e) => {
-                        e.target.pause();
-                        e.target.currentTime = 0;
+                      onMouseEnter={() => {
+                        const video = videoRefs.current[index];
+                        if (video) {
+                          video
+                            .play()
+                            .catch((err) => console.log("Play failed:", err));
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        const video = videoRefs.current[index];
+                        if (video) {
+                          video.pause();
+                          video.currentTime = 0;
+                        }
                       }}
                     />
                   )}
