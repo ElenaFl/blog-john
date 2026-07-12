@@ -158,40 +158,43 @@ export const WorkDetailsMashin = ({ work }) => {
                       }}
                     >
                       <div className="cube-3d-core">
+                        {/* Передняя и задняя */}
                         <div
                           className="cube-face"
                           style={{
-                            transform: "rotateY(0deg) translateZ(11px)",
+                            transform: "rotateY(0deg) translateZ(16px)",
                           }}
                         />
                         <div
                           className="cube-face"
                           style={{
-                            transform: "rotateY(90deg) translateZ(11px)",
+                            transform: "rotateY(180deg) translateZ(16px)",
+                          }}
+                        />
+                        {/* Боковые */}
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(90deg) translateZ(12px)",
                           }}
                         />
                         <div
                           className="cube-face"
                           style={{
-                            transform: "rotateY(180deg) translateZ(11px)",
+                            transform: "rotateY(-90deg) translateZ(12px)",
+                          }}
+                        />
+                        {/* Верх и низ */}
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateX(90deg) translateZ(12px)",
                           }}
                         />
                         <div
                           className="cube-face"
                           style={{
-                            transform: "rotateY(-90deg) translateZ(11px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateX(90deg) translateZ(11px)",
-                          }}
-                        />
-                        <div
-                          className="cube-face"
-                          style={{
-                            transform: "rotateX(-90deg) translateZ(11px)",
+                            transform: "rotateX(-90deg) translateZ(12px)",
                           }}
                         />
                       </div>
@@ -207,8 +210,8 @@ export const WorkDetailsMashin = ({ work }) => {
                       }}
                       className="video-mute-btn absolute z-40 p-2.5 rounded-full flex items-center justify-center w-10 h-10 cursor-pointer"
                       style={{
-                        bottom: isGirlProject ? "calc(14% + 16px)" : "24px",
-                        right: isGirlProject ? "calc(16% + 20px)" : "24px",
+                        bottom: isGirlProject ? "16px" : "16px",
+                        right: isGirlProject ? "16px" : "16px",
                       }}
                       title={isMuted ? "Включить звук" : "Выключить звук"}
                     >
