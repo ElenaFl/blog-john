@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// Импортируем наш умный загрузчик картинок с плавным скелетоном
-import {ImageWithSkeleton} from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton";
+import {ImageWithSkeleton}  from "../../components/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -73,7 +72,7 @@ export const WorkDetails = () => {
   }, [id]);
 
   // =========================================================================
-  // УПРАВЛЕНИЕ И ВОСПРОИЗВЕДЕНИЕ ВИДЕО (Только на десктопах)
+  // ИСПРАВЛЕННОЕ УПРАВЛЕНИЕ ВИДЕО: Безопасно ловим любые ошибки прерывания
   // =========================================================================
   const showMainVideo = work?.detailVideoSrc && isMainHovered && !isTouchDevice;
   useEffect(() => {
@@ -82,7 +81,15 @@ export const WorkDetails = () => {
 
     if (showMainVideo) {
       video.muted = isMuted;
-      video.play().catch((err) => console.log("Автоплей главного видео заблокирован:", err));
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          // Бесшумно игнорируем системное прерывание воспроизведения (AbortError)
+          if (err.name !== "AbortError") {
+            console.log("Автоплей главного видео заблокирован:", err);
+          }
+        });
+      }
     } else {
       video.pause();
       video.currentTime = 0;
@@ -96,7 +103,14 @@ export const WorkDetails = () => {
 
     if (showGalleryVideo) {
       video.muted = isMuted;
-      video.play().catch((err) => console.log("Автоплей видео галереи заблокирован:", err));
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          if (err.name !== "AbortError") {
+            console.log("Автоплей видео в галерее заблокирован:", err);
+          }
+        });
+      }
     } else {
       video.pause();
       video.currentTime = 0;
@@ -105,7 +119,6 @@ export const WorkDetails = () => {
 
   // =========================================================================
   // ВЫСОКОПРОИЗВОДИТЕЛЬНАЯ ОТРИСОВКА НА CANVAS (60 FPS)
-  // These effects do not re-run on coordinate changes!
   // =========================================================================
   useEffect(() => {
     const video = mainVideoRef.current;
@@ -211,10 +224,36 @@ export const WorkDetails = () => {
     })
     .join(" ");
 
-  // УМНЫЙ МАРКЕР: Автоматически определяем проект "Девушка" по заголовку
-  const isGirlProject = work.title?.toLowerCase().includes("девуш") || work.title?.toLowerCase().includes("girl");
+  // УМНЫЙ МАРКЕР: Исключаем первый ID (id === "1"), 
+  // так как на первом проекте галерея нам НУЖНА.
+  const lowerTitle = work.title?.toLowerCase() || "";
+  const isGirlProject = 
+    lowerTitle.includes("девуш") || 
+    lowerTitle.includes("girl") || 
+    lowerTitle.includes("портрет") || 
+    lowerTitle.includes("portrait") ||
+    lowerTitle.includes("арт") ||
+    lowerTitle.includes("art") ||
+    id === "2" || 
+    id === "3";
+
+  // Автоматические проверки наличия РЕАЛЬНОГО контента в полях базы данных
+  const hasProcessContent = work.sectionTitle?.trim() || work.processText?.trim();
+  const hasGalleryImages = galleryImages && galleryImages.length > 0;
+  const hasGalleryVideo = work.videoSrc && work.videoSrc.trim() !== "";
+
+  // Выводим отладочный лог в консоль браузера (F12)
+  console.log("🔍 [Отладка проекта]:", {
+    id: id,
+    title: work.title,
+    isGirlProject: isGirlProject,
+    shouldApplyZoom: isGirlProject,
+    hasProcess: !!hasProcessContent,
+    hasGallery: !!hasGalleryImages,
+    hasVideo: !!hasGalleryVideo
+  });
   
-  // Включаем зум (scale) только для проекта с девушкой, чтобы срезать черные полосы и водяной знак
+  // Включаем зум только для проекта с девушкой
   const shouldApplyZoom = isGirlProject;
 
   return (
@@ -240,7 +279,7 @@ export const WorkDetails = () => {
             {work.date}
           </span>
           
-          {/* Разделитель "|" (скрывается на мобильных для красоты адаптива) */}
+          {/* Разделитель "|" */}
           <span className="hidden sm:inline text-gray-300">|</span>
           
           {/* Серая строка тегов */}
@@ -258,16 +297,14 @@ export const WorkDetails = () => {
             work.detailVideoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"
           }`}
         >
-          {/* ИСПРАВЛЕНИЕ: Мы применили класс [&_img]:scale-[1.12], который зуммирует именно 
-              внутреннюю картинку скелетона, оставляя рамку контейнера ровной. 
-              Все черные бока и текст теперь идеально срезаны краями рамки! */}
+          {/* Масштабируем внутреннее изображение, срезая черные поля */}
           <ImageWithSkeleton
             src={work.img}
             alt={work.title}
             className={`w-full h-full object-cover transition-transform duration-300 ${shouldApplyZoom ? "[&_img]:scale-[1.12]" : ""}`}
           />
 
-          {/* Интерактивные видео-эффекты (рендерим только для мышки на ПК) */}
+          {/* Интерактивные видео-эффекты (ПК) */}
           {showMainVideo && (
             <>
               {/* Кастомный круглый курсор с золотым лотосом */}
@@ -292,22 +329,10 @@ export const WorkDetails = () => {
                 </svg>
               </div>
 
-              {/* Умный холст */}
-              {/* ИСПРАВЛЕНИЕ: К холсту видео также применен зум, чтобы идеально 
-                  скрыть водяной знак и боковые полосы в режиме проигрывания! */}
+              {/* Умный холст со Smart Crop масштабированием */}
               <canvas
                 ref={mainCanvasRef}
                 className={`absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in ${shouldApplyZoom ? "scale-[1.12]" : ""}`}
-              />
-
-              {/* Фоновое тег-видео */}
-              <video
-                ref={mainVideoRef}
-                src={work.detailVideoSrc}
-                playsInline
-                autoPlay
-                muted={isMuted}
-                className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
               />
 
               {/* Кнопка громкости */}
@@ -322,6 +347,17 @@ export const WorkDetails = () => {
           )}
         </div>
 
+        {/* Скрытый фоновый плеер живет в DOM всегда, защищая от AbortError на уровне браузера */}
+        {work.detailVideoSrc && (
+          <video
+            ref={mainVideoRef}
+            src={work.detailVideoSrc}
+            playsInline
+            muted={isMuted}
+            className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
+          />
+        )}
+
         {/* Краткое описание проекта */}
         <div
           style={{ textAlign: "justify" }}
@@ -331,12 +367,12 @@ export const WorkDetails = () => {
         </div>
 
         {/* ===================================================================
-            УМНЫЕ УСЛОВИЯ ОТРИСОВКИ: Если это проект с девушкой (isGirlProject),
-            все нижние секции ГАРАНТИРОВАНО полностью скрываются из структуры React!
+            ДИНАМИЧЕСКИЕ И УМНЫЕ СЕКЦИИ: 
+            Они скроются, если это проект с девушкой, ИЛИ если данные в базе пусты!
             =================================================================== */}
 
         {/* Дополнительный раздел: Творческий процесс */}
-        {!isGirlProject && work.sectionTitle && work.processText && (
+        {!isGirlProject && hasProcessContent && (
           <div className="border-t border-gray-200/40 pt-10 mb-12 animate-fade-in">
             <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-h)] mb-4 tracking-tight">
               {work.sectionTitle}
@@ -351,7 +387,7 @@ export const WorkDetails = () => {
         )}
 
         {/* Слайдер-галерея изображений проекта */}
-        {!isGirlProject && galleryImages.length > 0 && (
+        {!isGirlProject && hasGalleryImages && (
           <div className="space-y-6 mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">
               Project Gallery
@@ -371,7 +407,7 @@ export const WorkDetails = () => {
         )}
 
         {/* Дополнительное видео в галерее */}
-        {!isGirlProject && work.videoSrc && (
+        {!isGirlProject && hasGalleryVideo && (
           <div className="mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">
               Interactive Preview
@@ -416,19 +452,21 @@ export const WorkDetails = () => {
                     ref={galleryCanvasRef}
                     className="absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in"
                   />
-
-                  <video
-                    ref={galleryVideoRef}
-                    src={work.videoSrc}
-                    playsInline
-                    autoPlay
-                    muted={isMuted}
-                    className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
-                  />
                 </>
               )}
             </div>
           </div>
+        )}
+
+        {/* Скрытый фоновый плеер для видео в галерее, живет в DOM всегда */}
+        {work.videoSrc && (
+          <video
+            ref={galleryVideoRef}
+            src={work.videoSrc}
+            playsInline
+            muted={isMuted}
+            className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
+          />
         )}
 
         {/* Ссылка на проект (живой сайт) */}
