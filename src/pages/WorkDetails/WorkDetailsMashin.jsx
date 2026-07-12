@@ -127,7 +127,19 @@ export const WorkDetailsMashin = ({ work }) => {
             const isHovered = !!hoveredVideos[index];
 
             return (
-              <div key={index} className="w-full rounded-2xl mb-6">
+              <div
+                key={index}
+                className="w-full flex justify-center mb-10 max-sm:mb-6"
+              >
+                {/* Внешний контейнер:
+        1. max-w-3xl: ограничивает максимальную ширину (как было в старом коде)
+        2. aspect-video: жестко задает соотношение сторон 16/9.
+           *Важно:* если у вас видео не 16/9 (например, вертикальное),
+           лучше заменить этот класс на инлайн-стиль: style={{ aspectRatio: '4/3' }}
+           или любое другое соотношение вашего видео.
+        3. relative, overflow-hidden, rounded-2xl: общие стили контейнера
+        4. cursor-pointer: курсор меняется при наведении
+      */}
                 <div
                   onMouseEnter={() => {
                     if (!isMobile && !isTouchDevice) {
@@ -144,16 +156,24 @@ export const WorkDetailsMashin = ({ work }) => {
                       }
                     }
                   }}
-                  className="relative w-full aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer"
+                  className="relative w-full max-w-3xl aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer shadow-sm"
                 >
-                  {/* Картинка всегда видна, если не наведен курсор, либо если это мобилка */}
+                  {/* Общие стили для медиа:
+          absolute inset-0: растягивает элемент на весь родительский контейнер с aspect-ratio
+          w-full h-full: принудительно заполняет размеры
+          object-cover:  заставляет картинку/видео заполнять
+                        контейнер без искажений, обрезая лишнее, если пропорции
+                        файла и контейнера все же немного отличаются.
+        */}
+
+                  {/* Картинка (постер) */}
                   <img
                     src={item.img}
                     alt="Preview"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-0" : "opacity-100"}`}
                   />
 
-                  {/* Видео показывается только на десктопе при наведении */}
+                  {/* Видео */}
                   {!isMobile && !isTouchDevice && (
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
@@ -161,7 +181,7 @@ export const WorkDetailsMashin = ({ work }) => {
                       playsInline
                       muted
                       loop
-                      className="w-full h-full object-cover"
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-100" : "opacity-0"}`}
                     />
                   )}
                 </div>
