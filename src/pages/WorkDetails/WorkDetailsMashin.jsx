@@ -95,57 +95,6 @@ export const WorkDetailsMashin = ({ work }) => {
               </p>
             );
 
-          // if (item.type === "video") {
-          //   return (
-          //     <div
-          //       key={index}
-          //       className="w-full flex justify-center mb-10 max-sm:mb-6"
-          //     >
-          //       {/* Контейнер-оболочка */}
-          //       <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
-          //         {/* 1. Если мобилка — показываем только картинку */}
-          //         {isMobile || isTouchDevice ? (
-          //           <img
-          //             src={item.img}
-          //             alt="Preview"
-          //             className="w-full h-full object-cover block"
-          //           />
-          //         ) : (
-          //           /* 2. Десктоп: Видео и картинка наложены друг на друга */
-          //           <div className="relative w-full h-full group">
-          //             {/* Картинка как фон */}
-          //             <img
-          //               src={item.img}
-          //               alt="Preview"
-          //               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
-          //             />
-
-          //             {/* Видео */}
-          //             <video
-          //               ref={(el) => (videoRefs.current[index] = el)}
-          //               src={item.video}
-          //               className="absolute inset-0 w-full h-full object-cover"
-          //               playsInline
-          //               muted
-          //               loop
-          //               onMouseEnter={(e) => {
-          //                 // Прямой запуск
-          //                 e.target
-          //                   .play()
-          //                   .catch((err) => console.error("Play error:", err));
-          //               }}
-          //               onMouseLeave={(e) => {
-          //                 e.target.pause();
-          //                 e.target.currentTime = 0;
-          //               }}
-          //             />
-          //           </div>
-          //         )}
-          //       </div>
-          //     </div>
-          //   );
-          // }
-
           if (item.type === "video") {
             const isHovered = hoveredIndex === index;
             // Можно добавить проверку на название, если нужно, или просто передать true/false
@@ -157,7 +106,7 @@ export const WorkDetailsMashin = ({ work }) => {
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
                 <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA]"
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden bg-[#FBFBFA]"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
                   onMouseLeave={() => !isMobile && setHoveredIndex(null)}
                 >
@@ -176,11 +125,11 @@ export const WorkDetailsMashin = ({ work }) => {
                     isGirlProject={isGirlProject}
                   />
 
-                  {/* ПЛАШКИ (14% по бокам) */}
+                  {/* ПЛАШКИ (12% по бокам) */}
                   {isGirlProject && (
                     <>
-                      <div className="absolute top-0 left-0 bottom-0 w-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                      <div className="absolute top-0 right-0 bottom-0 w-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 left-0 bottom-0 w-[12%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 bottom-0 w-[12%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
                     </>
                   )}
                 </div>
