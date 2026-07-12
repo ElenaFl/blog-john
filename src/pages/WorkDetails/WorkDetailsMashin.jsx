@@ -130,7 +130,7 @@ export const WorkDetailsMashin = ({ work }) => {
          aspect-video (16/9) — держит пропорции, чтобы не было скачков
          mx-auto — если нужно по центру, или уберите для выравнивания по левому краю
       */}
-                <div className="relative max-w-3xl aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] group shadow-sm">
+                <div className="relative max-w-3xl h-auto aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] group shadow-sm">
                   {/* Картинка: всегда заполняет контейнер */}
                   <img
                     src={item.img}
