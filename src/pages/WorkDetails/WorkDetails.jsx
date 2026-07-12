@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
+// Импортируем наш загрузчик картинок по выверенному пути с двумя шагами вверх
+import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -232,11 +233,11 @@ export const WorkDetails = () => {
                 {isGirlProject && (
                   <>
                     {/* Левая маска */}
-                    <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none rounded-l-2xl"></div>
                     {/* Правая маска */}
-                    <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none rounded-r-2xl"></div>
                     {/* Нижняя маска (закрывает текст, поднята до 14% для 100% маскирования) */}
-                    <div className="absolute bottom-0 left-0 right-0 h-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-[14%] bg-[#FBFBFA] z-20 pointer-events-none rounded-b-2xl"></div>
                   </>
                 )}
 
