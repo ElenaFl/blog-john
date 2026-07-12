@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {ImageWithSkeleton}  from "../../components/ImageWithSkeleton/ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -9,7 +9,6 @@ export const WorkDetails = () => {
 
   // Определение мобильных и тач-устройств
   const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Ссылки на элементы для главного видео
   const mainVideoRef = useRef(null);
@@ -29,14 +28,8 @@ export const WorkDetails = () => {
     return savedMuteStatus ? JSON.parse(savedMuteStatus) : false;
   });
 
-  // Автоматическое определение типа устройства и тач-экрана при загрузке
+  // Автоматическое определение типа устройства (тач-экрана) при загрузке
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
     if (typeof window !== "undefined") {
       const hasTouch =
         "ontouchstart" in window ||
@@ -44,8 +37,6 @@ export const WorkDetails = () => {
         window.matchMedia("(pointer: coarse)").matches;
       setIsTouchDevice(hasTouch);
     }
-
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Синхронизация звука на всех плеерах страницы
@@ -59,7 +50,8 @@ export const WorkDetails = () => {
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
+        const apiUrl =
+          import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
         const response = await fetch(`${apiUrl}/api/works/${id}`);
         if (!response.ok) throw new Error("Ошибка загрузки");
         const data = await response.json();
@@ -72,7 +64,7 @@ export const WorkDetails = () => {
   }, [id]);
 
   // =========================================================================
-  // ИСПРАВЛЕННОЕ УПРАВЛЕНИЕ ВИДЕО: Безопасно ловим любые ошибки прерывания
+  // УПРАВЛЕНИЕ ВИДЕО: Безопасно ловим любые ошибки прерывания (AbortError)
   // =========================================================================
   const showMainVideo = work?.detailVideoSrc && isMainHovered && !isTouchDevice;
   useEffect(() => {
@@ -84,7 +76,6 @@ export const WorkDetails = () => {
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          // Бесшумно игнорируем системное прерывание воспроизведения (AbortError)
           if (err.name !== "AbortError") {
             console.log("Автоплей главного видео заблокирован:", err);
           }
@@ -131,7 +122,10 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      if (
+        canvas.width !== video.videoWidth ||
+        canvas.height !== video.videoHeight
+      ) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -159,7 +153,10 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      if (
+        canvas.width !== video.videoWidth ||
+        canvas.height !== video.videoHeight
+      ) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -206,7 +203,10 @@ export const WorkDetails = () => {
   // Безопасный разбор галереи и тегов проекта
   let galleryImages = [];
   try {
-    galleryImages = typeof work.gallery === "string" ? JSON.parse(work.gallery) : (work.gallery || []);
+    galleryImages =
+      typeof work.gallery === "string"
+        ? JSON.parse(work.gallery)
+        : work.gallery || [];
   } catch (e) {
     console.error("Ошибка парсинга галереи проекта:", e);
   }
@@ -214,8 +214,8 @@ export const WorkDetails = () => {
   const tagsArray = Array.isArray(work.tags)
     ? work.tags
     : typeof work.tags === "string"
-    ? JSON.parse(work.tags || "[]")
-    : [];
+      ? JSON.parse(work.tags || "[]")
+      : [];
 
   const formattedTags = tagsArray
     .map((tag) => {
@@ -224,21 +224,22 @@ export const WorkDetails = () => {
     })
     .join(" ");
 
-  // УМНЫЙ МАРКЕР: Исключаем первый ID (id === "1"), 
+  // УМНЫЙ МАРКЕР: Исключаем первый ID (id === "1"),
   // так как на первом проекте галерея нам НУЖНА.
   const lowerTitle = work.title?.toLowerCase() || "";
-  const isGirlProject = 
-    lowerTitle.includes("девуш") || 
-    lowerTitle.includes("girl") || 
-    lowerTitle.includes("портрет") || 
+  const isGirlProject =
+    lowerTitle.includes("девуш") ||
+    lowerTitle.includes("girl") ||
+    lowerTitle.includes("портрет") ||
     lowerTitle.includes("portrait") ||
     lowerTitle.includes("арт") ||
     lowerTitle.includes("art") ||
-    id === "2" || 
+    id === "2" ||
     id === "3";
 
   // Автоматические проверки наличия РЕАЛЬНОГО контента в полях базы данных
-  const hasProcessContent = work.sectionTitle?.trim() || work.processText?.trim();
+  const hasProcessContent =
+    work.sectionTitle?.trim() || work.processText?.trim();
   const hasGalleryImages = galleryImages && galleryImages.length > 0;
   const hasGalleryVideo = work.videoSrc && work.videoSrc.trim() !== "";
 
@@ -250,9 +251,9 @@ export const WorkDetails = () => {
     shouldApplyZoom: isGirlProject,
     hasProcess: !!hasProcessContent,
     hasGallery: !!hasGalleryImages,
-    hasVideo: !!hasGalleryVideo
+    hasVideo: !!hasGalleryVideo,
   });
-  
+
   // Включаем зум только для проекта с девушкой
   const shouldApplyZoom = isGirlProject;
 
@@ -278,10 +279,10 @@ export const WorkDetails = () => {
           <span className="px-3 py-1 bg-[#1A1A1A] rounded-3xl text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider flex items-center justify-center shrink-0">
             {work.date}
           </span>
-          
+
           {/* Разделитель "|" */}
           <span className="hidden sm:inline text-gray-300">|</span>
-          
+
           {/* Серая строка тегов */}
           <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">
             {formattedTags}
@@ -294,7 +295,9 @@ export const WorkDetails = () => {
           onMouseLeave={() => setIsMainHovered(false)}
           onMouseMove={handleMainMouseMove}
           className={`relative w-full aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200/40 bg-gray-100 ${
-            work.detailVideoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"
+            work.detailVideoSrc && !isTouchDevice
+              ? "cursor-none"
+              : "cursor-pointer"
           }`}
         >
           {/* Масштабируем внутреннее изображение, срезая черные поля */}
@@ -316,16 +319,28 @@ export const WorkDetails = () => {
                 }}
               >
                 {/* Авторский SVG золотого цветка лотоса */}
-                <svg 
-                  viewBox="0 0 64 64" 
-                  className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse" 
+                <svg
+                  viewBox="0 0 64 64"
+                  className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
                   fill="currentColor"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z" fill="#FBBF24" />
-                  <path d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z" fill="#F59E0B" />
-                  <path d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z" fill="#F59E0B" />
-                  <path d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z" fill="#D97706" />
+                  <path
+                    d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
+                    fill="#FBBF24"
+                  />
+                  <path
+                    d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
+                    fill="#F59E0B"
+                  />
+                  <path
+                    d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
+                    fill="#F59E0B"
+                  />
+                  <path
+                    d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
+                    fill="#D97706"
+                  />
                 </svg>
               </div>
 
@@ -394,7 +409,10 @@ export const WorkDetails = () => {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {galleryImages.map((imagePath, idx) => (
-                <div key={idx} className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video">
+                <div
+                  key={idx}
+                  className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video"
+                >
                   <ImageWithSkeleton
                     src={imagePath}
                     alt={`Галерея ${idx + 1}`}
@@ -436,15 +454,27 @@ export const WorkDetails = () => {
                       top: `${galleryCoords.y}px`,
                     }}
                   >
-                    <svg 
-                      viewBox="0 0 64 64" 
-                      className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse" 
+                    <svg
+                      viewBox="0 0 64 64"
+                      className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
                       fill="currentColor"
                     >
-                      <path d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z" fill="#FBBF24" />
-                      <path d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z" fill="#F59E0B" />
-                      <path d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z" fill="#F59E0B" />
-                      <path d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z" fill="#D97706" />
+                      <path
+                        d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
+                        fill="#FBBF24"
+                      />
+                      <path
+                        d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
+                        fill="#F59E0B"
+                      />
+                      <path
+                        d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
+                        fill="#F59E0B"
+                      />
+                      <path
+                        d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
+                        fill="#D97706"
+                      />
                     </svg>
                   </div>
 
