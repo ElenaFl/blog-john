@@ -28,6 +28,9 @@ export const WorkDetailsMashin = ({ work }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const tagsArray = Array.isArray(work.tags) ? work.tags : typeof work.tags === "string" ? JSON.parse(work.tags || "[]") : [];
+  const formattedTags = tagsArray.map(t => `#${t.startsWith("#") ? t.slice(1) : t}`).join(" ");
+
   if (!work) return null;
 
   return (
@@ -43,6 +46,14 @@ export const WorkDetailsMashin = ({ work }) => {
         <h2 className="mb-4 sm:mb-6 text-[28px] sm:text-[38px] font-bold leading-tight tracking-tight text-[var(--text-h)]">
           {work.title}
         </h2>
+
+        <div className="w-full sm:w-fit flex flex-wrap gap-4 items-center mb-8">
+          <span className="px-3 py-1 bg-[#1A1A1A] rounded-3xl text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider flex items-center justify-center shrink-0">
+            {work.date}
+          </span>
+          <span className="hidden sm:inline text-gray-300">|</span>
+          <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">{formattedTags}</span>
+        </div>
 
         {work.gallery?.map((item, index) => {
           if (item.type === "heading")
