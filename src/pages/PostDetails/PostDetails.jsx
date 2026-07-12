@@ -48,19 +48,17 @@ export const PostDetails = () => {
         </h2>
 
         {/* Блок метаданных (Дата и Теги) */}
-        <div className="w-full sm:w-fit flex flex-wrap gap-4 items-center mb-8 text-gray-400">
-          <span className="font-medium">{post.date}</span>
-          <span className="hidden sm:inline">|</span>
-          <span className="font-medium">
+        <div className="w-full sm:w-fit flex flex-wrap gap-3 sm:gap-4 items-center mb-8 text-[15px] sm:text-[17px] text-gray-500/90 font-medium tracking-wide">
+          <span>{post.date}</span>
+          <span className="hidden sm:inline text-gray-300">|</span>
+          <span className="text-[var(--accent)]">
             {post.tags &&
-              post.tags.map((tag, index) => <span key={index}>{tag} </span>)}
+              post.tags.map((tag, index) => <span key={index} className="mr-1.5">{tag}</span>)}
           </span>
         </div>
 
         {/* ===================================================================
-            ИСПРАВЛЕНИЕ: Мы задали явный, невероятно комфортный и адаптивный 
-            размер текста статьи. Текст будет 18px на мобильных телефонах 
-            и плавно расширится до 20px на планшетах и компьютерах!
+            Текст статьи
             =================================================================== */}
         <div
           style={{ textAlign: "justify" }}
