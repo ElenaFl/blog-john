@@ -77,7 +77,7 @@ export const WorkDetailsMashin = ({ work }) => {
                   }}
                   className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
                 >
-                  {item.img && <img src={item.img} alt="Preview" className="w-full h-auto" />}
+                  {item.img && <img src={item.img} alt="Preview" className="max-w-3xl mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6"/>}
                   <video
                     ref={(el) => (videoRefs.current[index] = el)}
                     src={item.video}
