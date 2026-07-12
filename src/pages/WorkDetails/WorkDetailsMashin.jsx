@@ -170,7 +170,7 @@ export const WorkDetailsMashin = ({ work }) => {
                   <img
                     src={item.img}
                     alt="Preview"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-0" : "opacity-100"}`}
+                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-0" : "opacity-100"}`}
                   />
 
                   {/* Видео */}
