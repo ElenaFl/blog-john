@@ -1,127 +1,163 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
-// Принимаем { work } как пропс от диспетчера
-export const WorkDetailsMashin = ({ work }) => {
+export const WorkDetailMashin = ({ work }) => {
   const navigate = useNavigate();
 
-  const [isMainHovered, setIsMainHovered] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isMuted, setIsMuted] = useState(true);
+  // Состояния для логики галереи
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("video_muted") || "false");
+    } catch {
+      return false;
+    }
+  });
+  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
+  const [galleryCoords, setGalleryCoords] = useState({ x: -10, y: -10 });
 
-  const mainContainerRef = useRef(null);
+  useEffect(() => {
+    const checkMobile = () =>
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-  // Обработка тегов (теперь безопасно внутри компонента)
-  const tagsArray = Array.isArray(work?.tags)
-    ? work.tags
-    : typeof work?.tags === "string"
-      ? JSON.parse(work.tags || "[]")
-      : [];
-
-  const formattedTags = tagsArray
-    .map((t) => `#${t.startsWith("#") ? t.slice(1) : t}`)
-    .join(" ");
-
-  const handleMouseMove = (e) => {
-    if (!mainContainerRef.current) return;
-    const rect = mainContainerRef.current.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+  const toggleMute = () => {
+    setIsMuted((prev) => {
+      const newState = !prev;
+      localStorage.setItem("video_muted", JSON.stringify(newState));
+      return newState;
     });
   };
 
-  // Если вдруг пришел пустой объект
-  if (!work)
-    return (
-      <div className="text-center py-24 text-gray-400">
-        Данные отсутствуют...
-      </div>
-    );
+  if (!work) return null;
 
   return (
-    <div className="pt-12 sm:pt-36 bg-[#FBFBFA] min-h-screen">
-      <div className="sm:max-w-[858px] mx-auto px-4 sm:px-6 mb-16">
+    <div className="pt-12 sm:pt-36 bg-transparent">
+      <div className="sm:max-w-[858px] ml-auto mr-auto pl-4 pr-4 sm:pl-6 sm:pr-6 mb-16">
         <button
           onClick={() => navigate(-1)}
-          className="mb-8 text-[#1A1A1A] font-bold uppercase text-[11px] tracking-widest hover:text-[#00809B] transition-colors"
+          className="mb-8 text-[var(--accent)] hover:text-[#00809B] cursor-pointer flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-colors"
         >
-          ← НАЗАД
+          ← GO BACK
         </button>
 
-        <h2 className="mb-6 text-[32px] sm:text-[48px] font-bold leading-tight tracking-tighter text-[#1A1A1A]">
+        <h2 className="mb-4 sm:mb-6 text-[28px] sm:text-[38px] font-bold leading-tight tracking-tight text-[var(--text-h)]">
           {work.title}
         </h2>
 
-        {/* Секция медиа */}
-        <div
-          ref={mainContainerRef}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => setIsMainHovered(true)}
-          onMouseLeave={() => setIsMainHovered(false)}
-          className="relative w-full overflow-hidden cursor-none sm:cursor-auto rounded-xl bg-gray-100"
-        >
-          <div className="hidden sm:block">
-            {work.detailVideoSrc ? (
-              <video
-                src={work.detailVideoSrc}
-                autoPlay
-                muted={isMuted}
-                loop
-                playsInline
-                className="w-full h-auto object-cover"
-              />
-            ) : (
-              <ImageWithSkeleton
-                src={work.img}
-                alt={work.title}
-                className="w-full h-auto"
-              />
-            )}
+        {/* --- ГАЛЕРЕЯ СО СМЕЩЕНИЕМ ВЛЕВО --- */}
+        {work.gallery && work.gallery.length > 0 && (
+          <div className="flex flex-col gap-8 mt-8 mb-10 items-start w-full">
+            {work.gallery.map((item, index) => {
+              if (item.type === "heading")
+                return (
+                  <h4
+                    key={index}
+                    className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left"
+                  >
+                    {item.text}
+                  </h4>
+                );
+              if (item.type === "text")
+                return (
+                  <p
+                    key={index}
+                    className="text-[16px] leading-relaxed text-gray-800 text-left mb-2"
+                  >
+                    {item.text}
+                  </p>
+                );
+
+              if (item.type === "video") {
+                return (
+                  <div
+                    key={index}
+                    className="w-full mb-6 max-sm:mb-4 text-left"
+                  >
+                    <div
+                      onMouseEnter={(e) => {
+                        if (isMobile) return;
+                        setIsGalleryHovered(true);
+                        const v = e.currentTarget.querySelector("video");
+                        if (v) v.play().catch(() => {});
+                      }}
+                      onMouseLeave={(e) => {
+                        if (isMobile) return;
+                        setIsGalleryHovered(false);
+                        const v = e.currentTarget.querySelector("video");
+                        if (v) {
+                          v.pause();
+                          v.currentTime = 0;
+                        }
+                      }}
+                      onMouseMove={(e) => {
+                        if (isMobile) return;
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        setGalleryCoords({
+                          x:
+                            x > rect.width * 0.16 && x < rect.width * 0.84
+                              ? x
+                              : -10,
+                          y,
+                        });
+                      }}
+                      className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none group"
+                    >
+                      {item.img && (
+                        <img
+                          src={item.img}
+                          alt="Preview"
+                          className={
+                            isMobile
+                              ? "relative w-full h-auto px-4 rounded-2xl"
+                              : "absolute top-1/2 left-1/2 w-[68%] h-full -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none"
+                          }
+                        />
+                      )}
+                      {!isMobile && isGalleryHovered && (
+                        <>
+                          <canvas
+                            ref={(c) => {
+                              if (c) {
+                                /* Логика рендера канваса */
+                              }
+                            }}
+                            className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+                          />
+                          <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none" />
+                          <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none" />
+                        </>
+                      )}
+                      {!isMobile && (
+                        <video
+                          src={item.video}
+                          playsInline
+                          muted={isMuted}
+                          className="fixed top-0 left-0 w-px h-px opacity-0 -z-50"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+              if (item.type === "image")
+                return (
+                  <ImageWithSkeleton
+                    key={index}
+                    src={item.src}
+                    className="w-full h-auto rounded-md mb-6"
+                  />
+                );
+              return null;
+            })}
           </div>
-
-          <div className="block sm:hidden">
-            <ImageWithSkeleton
-              src={work.img}
-              alt={work.title}
-              className="w-full h-auto"
-            />
-          </div>
-
-          {/* Кастомный курсор-кубик */}
-          {isMainHovered && window.innerWidth >= 640 && work.detailVideoSrc && (
-            <div
-              className="absolute w-10 h-10 border border-white bg-black/30 backdrop-blur-sm pointer-events-none z-50 flex items-center justify-center transition-transform duration-75"
-              style={{
-                left: `${mousePos.x - 20}px`,
-                top: `${mousePos.y - 20}px`,
-              }}
-            >
-              <div className="w-2 h-2 bg-white animate-pulse" />
-            </div>
-          )}
-
-          {/* Кнопка динамика */}
-          {work.detailVideoSrc && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMuted(!isMuted);
-              }}
-              className="absolute bottom-4 right-4 z-50 bg-black/50 backdrop-blur-md text-white border border-white/20 p-3 rounded-full hover:bg-[#00809B] transition-colors"
-            >
-              {isMuted ? "🔇" : "🔊"}
-            </button>
-          )}
-        </div>
-
-        <div
-          className="text-[18px] sm:text-[20px] leading-relaxed text-[#222222] mt-12"
-          style={{ textAlign: "justify" }}
-        >
-          {work.description}
-        </div>
+        )}
       </div>
     </div>
   );
