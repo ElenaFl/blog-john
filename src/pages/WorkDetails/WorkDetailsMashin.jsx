@@ -22,7 +22,7 @@ export const WorkDetailsMashin = ({ work }) => {
   );
 
   // Cостояние для отслеживания наведения на  видео
-  const [hoveredVideos, setHoveredVideos] = useState({});
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   // 2. Эффект только для подписки на изменения
   useEffect(() => {
@@ -95,76 +95,50 @@ export const WorkDetailsMashin = ({ work }) => {
               </p>
             );
 
-          // if (item.type === "video") {
-          //   return (
-          //     <div key={index} className="w-full rounded-2xl mb-6">
-          //       <div
-          //         onMouseEnter={() => {
-          //           if (!isMobile && !isTouchDevice) videoRefs.current[index]?.play().catch(() => {});
-          //         }}
-          //         onMouseLeave={() => {
-          //           if (videoRefs.current[index]) {
-          //             videoRefs.current[index].pause();
-          //             videoRefs.current[index].currentTime = 0;
-          //           }
-          //         }}
-          //         className="relative max-w-3xl aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
-          //       >
-          //         {item.img && <img src={item.img} alt="Preview" className=" mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6 rounded-2xl w-full h-full object-cover"/>}
-          //         <video
-          //           ref={(el) => (videoRefs.current[index] = el)}
-          //           src={item.video}
-          //           playsInline
-          //           muted
-          //           className="hidden"
-          //         />
-          //       </div>
-          //     </div>
-          //   );
-          // }
-
           if (item.type === "video") {
+            // const isHovered =hoveredIndex === index;
+
             return (
               <div
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                {/* Контейнер с фиксированным соотношением сторон */}
-                <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
+                <div
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm"
+                  onMouseEnter={() => {
+                    if (!isMobile && !isTouchDevice) {
+                      setHoveredIndex(index);
+                      // Прямой вызов play() в дополнение к эффекту для мгновенной реакции
+                      videoRefs.current[index]?.play().catch(() => {});
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (!isMobile && !isTouchDevice) {
+                      setHoveredIndex(null);
+                      if (videoRefs.current[index]) {
+                        videoRefs.current[index].pause();
+                        videoRefs.current[index].currentTime = 0;
+                      }
+                    }
+                  }}
+                >
                   {isMobile || isTouchDevice ? (
-                    // Мобильный вариант
+                    // Мобильная версия: статичная картинка
                     <img
                       src={item.img}
                       alt="Preview"
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    // Десктопный вариант
+                    // Десктопная версия: видео
                     <video
-                      ref={(el) => {
-                        if (el) videoRefs.current[index] = el;
-                      }}
+                      ref={(el) => (videoRefs.current[index] = el)}
                       src={item.video}
-                      poster={item.img}
+                      poster={item.img} // Красивая заглушка, пока видео загружается
                       className="w-full h-full object-cover"
                       playsInline
-                      muted // Обязательно для автозапуска
+                      muted
                       loop
-                      onMouseEnter={() => {
-                        const video = videoRefs.current[index];
-                        if (video) {
-                          video
-                            .play()
-                            .catch((err) => console.log("Play failed:", err));
-                        }
-                      }}
-                      onMouseLeave={() => {
-                        const video = videoRefs.current[index];
-                        if (video) {
-                          video.pause();
-                          video.currentTime = 0;
-                        }
-                      }}
                     />
                   )}
                 </div>
