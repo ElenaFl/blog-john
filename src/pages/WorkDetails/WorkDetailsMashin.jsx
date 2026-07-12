@@ -148,31 +148,41 @@ export const WorkDetailsMashin = ({ work }) => {
 
           if (item.type === "video") {
             const isHovered = hoveredIndex === index;
+            // Можно добавить проверку на название, если нужно, или просто передать true/false
+            const isGirlProject = true;
 
             return (
               <div
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                {/* Контейнер всегда имеет фиксированные размеры (aspect-video) */}
                 <div
                   className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
                   onMouseLeave={() => !isMobile && setHoveredIndex(null)}
                 >
-                  {/* Картинка: всегда под видео, видна если видео на паузе */}
+                  {/* Картинка как фон */}
                   <img
                     src={item.img}
                     alt="Preview"
                     className="absolute inset-0 w-full h-full object-cover z-0"
                   />
 
-                  {/* Видео: всегда в DOM, управляется через useEffect */}
+                  {/* Видео */}
                   <VideoPlayer
                     src={item.video}
                     shouldPlay={isHovered}
-                    isMuted={true} // или используйте ваше глобальное состояние звука
+                    isMuted={true}
+                    isGirlProject={isGirlProject}
                   />
+
+                  {/* ПЛАШКИ (14% по бокам) */}
+                  {isGirlProject && (
+                    <>
+                      <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    </>
+                  )}
                 </div>
               </div>
             );
