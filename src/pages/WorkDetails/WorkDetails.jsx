@@ -21,6 +21,7 @@ export const WorkDetails = () => {
     return savedMuteStatus ? JSON.parse(savedMuteStatus) : false;
   });
 
+  // Автоматическое определение мобильной версии и тач-экрана при загрузке
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
@@ -39,11 +40,13 @@ export const WorkDetails = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Синхронизация звука на всех плеерах страницы
   useEffect(() => {
     localStorage.setItem("video_muted", JSON.stringify(isMuted));
     if (mainVideoRef.current) mainVideoRef.current.muted = isMuted;
   }, [isMuted]);
 
+  // Загрузка детальных данных работы из бэкенда Amvera
   useEffect(() => {
     const fetchWork = async () => {
       try {
@@ -60,6 +63,9 @@ export const WorkDetails = () => {
     fetchWork();
   }, [id]);
 
+  // =========================================================================
+  // УПРАВЛЕНИЕ ВИДЕО: Безопасно ловим любые ошибки прерывания (AbortError)
+  // =========================================================================
   const showMainVideo = work?.detailVideoSrc && isMainHovered && !isTouchDevice;
   useEffect(() => {
     const video = mainVideoRef.current;
@@ -86,6 +92,7 @@ export const WorkDetails = () => {
     setIsMuted((prev) => !prev);
   };
 
+  // Если данные еще не загружены, показываем аккуратное состояние загрузки
   if (!work) {
     return (
       <div className="text-center py-24 text-gray-400 text-sm">
@@ -194,7 +201,7 @@ export const WorkDetails = () => {
                 setMainCoords({ x: -100, y: -100 });
               }
             }}
-            className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] cursor-none group"
+            className="relative w-full aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-none group"
           >
             {isMobile ? (
               /* НА МОБИЛЬНОМ: Только статичная качественная картинка */
@@ -202,7 +209,7 @@ export const WorkDetails = () => {
                 <img
                   src={work.img}
                   alt={work.title}
-                  className="w-full h-full object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-2xl"
                 />
               )
             ) : /* НА ДЕСКТОПЕ: Прямое видео без переключений и скачков */
@@ -226,14 +233,9 @@ export const WorkDetails = () => {
                     <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
                     {/* Правая маска */}
                     <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                    {/* Нижняя маска (закрывает текст) */}
-                    <div className="absolute bottom-0 left-0 right-0 h-[10%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    {/* Нижняя маска (закрывает текст, поднята до 14% для 100% маскирования) */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[14%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
                   </>
-                )}
-
-                {/* СЛОЙ 2.5 (z-25): ДЕКОРАТИВНАЯ МАСКА ИЗ INDEX.CSS */}
-                {isGirlProject && (
-                  <div className="video-corner-mask z-25 pointer-events-none" />
                 )}
 
                 {/* СЛОЙ 5 (z-50): Легендарный кастомный геометрический 3D-лотос */}
@@ -316,7 +318,7 @@ export const WorkDetails = () => {
                   onClick={toggleMute}
                   className="video-mute-btn absolute z-40 hover:scale-110 active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-white/20 bg-[rgba(245,158,11,0.45)] text-amber-100 p-2 rounded-full transition-all cursor-pointer flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10"
                   style={{
-                    bottom: "32px",
+                    bottom: isGirlProject ? "calc(14% + 16px)" : "32px",
                     right: isGirlProject ? "calc(16% + 20px)" : "32px",
                     cursor: "inherit",
                   }}
@@ -356,7 +358,7 @@ export const WorkDetails = () => {
                 </button>
 
                 {/* СЛОЙ 3 (z-30): Элегантная рамка */}
-                <div className="absolute inset-0 z-30 pointer-events-none border-8 border-[#FBFBFA] rounded-md"></div>
+                <div className="absolute inset-0 z-30 pointer-events-none border-8 border-[#FBFBFA] rounded-2xl"></div>
               </>
             ) : (
               /* Если десктопного видео нет, выводим изображение */
@@ -364,7 +366,7 @@ export const WorkDetails = () => {
                 <img
                   src={work.img}
                   alt={work.title}
-                  className="w-full h-full object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-2xl"
                 />
               )
             )}
