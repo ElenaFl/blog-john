@@ -129,42 +129,35 @@ export const WorkDetailsMashin = ({ work }) => {
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                {/* 1. w-full: на мобилке растянется на всю ширину.
-         2. sm:w-[600px] (или ваш размер): на десктопе будет фиксированной ширины.
-         3. aspect-video: жестко держит пропорции, предотвращая "скачки".
+                {/* Контейнер имеет фиксированный aspect-video (16/9). 
+        На десктопе ограничиваем ширину через sm:w-[600px].
+        На мобилке растягиваем через w-full.
       */}
-                <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm group">
-                  {/* Картинка: всегда заполняет контейнер 16:9 */}
-                  <img
-                    src={item.img}
-                    alt="Preview"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-
-                  {/* Видео: при наведении меняет прозрачность */}
-                  <video
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    src={item.video}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    playsInline
-                    muted
-                    loop
-                    onMouseEnter={(e) => {
-                      if (!isMobile && !isTouchDevice) {
-                        e.target
-                          .play()
-                          .catch((err) =>
-                            console.error("Video play error:", err),
-                          );
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isMobile && !isTouchDevice) {
+                <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
+                  {/* 1. Если мобилка — показываем только картинку */}
+                  {isMobile || isTouchDevice ? (
+                    <img
+                      src={item.img}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    /* 2. Если десктоп — показываем только видео */
+                    <video
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      src={item.video}
+                      poster={item.img} // Показывает картинку до загрузки видео
+                      className="w-full h-full object-cover"
+                      playsInline
+                      muted
+                      loop
+                      onMouseEnter={(e) => e.target.play().catch(() => {})}
+                      onMouseLeave={(e) => {
                         e.target.pause();
                         e.target.currentTime = 0;
-                      }
-                    }}
-                  />
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             );
