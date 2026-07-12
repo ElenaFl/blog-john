@@ -129,16 +129,10 @@ export const WorkDetailsMashin = ({ work }) => {
             return (
               <div
                 key={index}
-                className="w-full flex justify-center mb-10 max-sm:mb-6"
+                className="w-full mb-10 max-sm:mb-6 flex justify-center"
               >
-                {/* Внешний контейнер:
-        1. max-w-3xl: ограничивает максимальную ширину (как было в старом коде)
-        2. aspect-video: жестко задает соотношение сторон 16/9.
-           *Важно:* если у вас видео не 16/9 (например, вертикальное),
-           лучше заменить этот класс на инлайн-стиль: style={{ aspectRatio: '4/3' }}
-           или любое другое соотношение вашего видео.
-        3. relative, overflow-hidden, rounded-2xl: общие стили контейнера
-        4. cursor-pointer: курсор меняется при наведении
+                {/* Убрали aspect-video. Теперь контейнер будет подстраиваться под контент.
+        Добавили 'w-full' и 'max-w-3xl' для ширины.
       */}
                 <div
                   onMouseEnter={() => {
@@ -156,24 +150,19 @@ export const WorkDetailsMashin = ({ work }) => {
                       }
                     }
                   }}
-                  className="relative w-full max-w-3xl aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer shadow-sm"
+                  // Фиксируем высоту через aspect-ratio, но берем пропорции видео (например, 16/9)
+                  // Если видео 16:9, напишите 16/9. Если другое — укажите точное.
+                  className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer shadow-sm"
+                  style={{ aspectRatio: "16 / 9" }}
                 >
-                  {/* Общие стили для медиа:
-          absolute inset-0: растягивает элемент на весь родительский контейнер с aspect-ratio
-          w-full h-full: принудительно заполняет размеры
-          object-cover:  заставляет картинку/видео заполнять
-                        контейнер без искажений, обрезая лишнее, если пропорции
-                        файла и контейнера все же немного отличаются.
-        */}
-
-                  {/* Картинка (постер) */}
+                  {/* Картинка: object-cover обрежет лишние края, чтобы она идеально легла в 16/9 */}
                   <img
                     src={item.img}
                     alt="Preview"
-                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-0" : "opacity-100"}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"}`}
                   />
 
-                  {/* Видео */}
+                  {/* Видео: object-cover заставит его растянуться на 16/9 без черных полос */}
                   {!isMobile && !isTouchDevice && (
                     <video
                       ref={(el) => (videoRefs.current[index] = el)}
@@ -181,7 +170,7 @@ export const WorkDetailsMashin = ({ work }) => {
                       playsInline
                       muted
                       loop
-                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${isHovered ? "opacity-100" : "opacity-0"}`}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}
                     />
                   )}
                 </div>
