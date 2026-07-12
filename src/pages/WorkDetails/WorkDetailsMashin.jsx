@@ -129,30 +129,34 @@ export const WorkDetailsMashin = ({ work }) => {
                 key={index}
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#FBFBFA]">
+                <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm">
                   <video
-                    // Передаем ссылку на видео
+                    ref={(el) => (videoRefs.current[index] = el)}
                     src={item.video}
-                    // Постер — это ваша картинка. Браузер сам растянет её по размерам видео
+                    // Постер — это картинка, она будет видна, пока видео не играет
                     poster={item.img}
-                    // Настройки воспроизведения
                     playsInline
                     muted
                     loop
                     preload="metadata"
-                    // Логика событий:
-                    onMouseEnter={(e) => {
-                      if (!isMobile && !isTouchDevice)
-                        e.target.play().catch(() => {});
-                    }}
-                    onMouseLeave={(e) => {
+                    // Запускаем только на десктопе
+                    onMouseEnter={() => {
                       if (!isMobile && !isTouchDevice) {
-                        e.target.pause();
-                        e.target.currentTime = 0;
+                        videoRefs.current[index]?.play().catch(() => {});
                       }
                     }}
-                    // Классы для внешнего вида
-                    className="w-full h-auto block object-cover"
+                    // Останавливаем при уходе курсора
+                    onMouseLeave={() => {
+                      if (!isMobile && !isTouchDevice) {
+                        const vid = videoRefs.current[index];
+                        if (vid) {
+                          vid.pause();
+                          vid.currentTime = 0;
+                        }
+                      }
+                    }}
+                    // h-auto позволяет видео самому определять высоту без искажений
+                    className="w-full h-auto block"
                   />
                 </div>
               </div>
