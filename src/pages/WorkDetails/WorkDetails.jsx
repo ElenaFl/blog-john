@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton";
+import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -177,6 +177,8 @@ export const WorkDetails = () => {
             БЕЗУПРЕЧНЫЙ НАТИВНЫЙ ПЛЕЕР ВИДЕО С ОБРЕЗКОЙ И 3D ЛОТОСОМ
             ========================================================================= */}
         <div className="max-w-3xl mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6">
+          {/* ИСПРАВЛЕНИЕ: Добавлен класс [transform:translateZ(0)] и rounded-2xl для идеального скругления углов,
+              а также select-none, чтобы навсегда убрать мигающую черную черточку carets */}
           <div
             onMouseEnter={() => setIsMainHovered(true)}
             onMouseLeave={() => setIsMainHovered(false)}
@@ -196,12 +198,12 @@ export const WorkDetails = () => {
                 currentX <= rightBound &&
                 currentY <= bottomBound
               ) {
-                setMainCoords({ x: currentX, y: currentY });
+                setMainCoords({ x: e.clientX, y: e.clientY });
               } else {
                 setMainCoords({ x: -100, y: -100 });
               }
             }}
-            className="relative w-full aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-none group"
+            className="relative w-full aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-none group select-none [transform:translateZ(0)]"
           >
             {isMobile ? (
               /* НА МОБИЛЬНОМ: Только статичная качественная картинка */
@@ -243,9 +245,12 @@ export const WorkDetails = () => {
                   <div
                     className="floating-3d-cursor"
                     style={{
+                      position: "fixed",
                       left: `${mainCoords.x}px`,
                       top: `${mainCoords.y}px`,
                       transform: "translate(-50%, -50%)",
+                      pointerEvents: "none", // ИСПРАВЛЕНИЕ: Клик теперь свободно проходит сквозь лотос прямо по кнопке звука!
+                      userSelect: "none",
                     }}
                   >
                     <div className="lotus-3d-core flex items-center justify-center">
@@ -357,7 +362,7 @@ export const WorkDetails = () => {
                   )}
                 </button>
 
-                {/* СЛОЙ 3 (z-30): Элегантная рамка */}
+                {/* СЛОЙ 3 (z-30): Элегантная рамка (скруглена до 2xl в унисон с родителем) */}
                 <div className="absolute inset-0 z-30 pointer-events-none border-8 border-[#FBFBFA] rounded-2xl"></div>
               </>
             ) : (
