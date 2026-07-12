@@ -125,29 +125,37 @@ export const WorkDetailsMashin = ({ work }) => {
 
           if (item.type === "video") {
             return (
-              <div key={index} className="max-w-3xl flex mb-10 max-sm:mb-6">
-                {/* max-w-3xl — ограничение ширины
-         aspect-video (16/9) — держит пропорции, чтобы не было скачков
-         mx-auto — если нужно по центру, или уберите для выравнивания по левому краю
+              <div
+                key={index}
+                className="w-full flex justify-center mb-10 max-sm:mb-6"
+              >
+                {/* 1. w-full: на мобилке растянется на всю ширину.
+         2. sm:w-[600px] (или ваш размер): на десктопе будет фиксированной ширины.
+         3. aspect-video: жестко держит пропорции, предотвращая "скачки".
       */}
-                <div className="relative max-w-3xl h-auto aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] group shadow-sm">
-                  {/* Картинка: всегда заполняет контейнер */}
+                <div className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm group">
+                  {/* Картинка: всегда заполняет контейнер 16:9 */}
                   <img
                     src={item.img}
                     alt="Preview"
-                    className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  {/* Видео: проявляется при наведении */}
+                  {/* Видео: при наведении меняет прозрачность */}
                   <video
                     ref={(el) => (videoRefs.current[index] = el)}
                     src={item.video}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                     playsInline
                     muted
+                    loop
                     onMouseEnter={(e) => {
                       if (!isMobile && !isTouchDevice) {
-                        e.target.play().catch(() => {});
+                        e.target
+                          .play()
+                          .catch((err) =>
+                            console.error("Video play error:", err),
+                          );
                       }
                     }}
                     onMouseLeave={(e) => {
