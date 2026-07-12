@@ -1,37 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
 
 export const WorkDetailMashin = ({ work }) => {
   const navigate = useNavigate();
+  const videoRefs = useRef({});
 
-  // Состояния для логики галереи
-  const [isMobile, setIsMobile] = useState(false);
-  const [isMuted, setIsMuted] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("video_muted") || "false");
-    } catch {
-      return false;
-    }
+  // Инициализируем состояние один раз при запуске, чтобы не вызывать useEffect
+  const [isMobile, setIsMobile] = useState(() => {
+    return typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 768px)").matches
+      : false;
   });
-  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
-  const [galleryCoords, setGalleryCoords] = useState({ x: -10, y: -10 });
 
   useEffect(() => {
-    const checkMobile = () =>
+    const handleResize = () => {
       setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+    };
 
-  const toggleMute = () => {
-    setIsMuted((prev) => {
-      const newState = !prev;
-      localStorage.setItem("video_muted", JSON.stringify(newState));
-      return newState;
-    });
-  };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   if (!work) return null;
 
@@ -49,115 +38,73 @@ export const WorkDetailMashin = ({ work }) => {
           {work.title}
         </h2>
 
-        {/* --- ГАЛЕРЕЯ СО СМЕЩЕНИЕМ ВЛЕВО --- */}
-        {work.gallery && work.gallery.length > 0 && (
-          <div className="flex flex-col gap-8 mt-8 mb-10 items-start w-full">
-            {work.gallery.map((item, index) => {
-              if (item.type === "heading")
-                return (
-                  <h4
-                    key={index}
-                    className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left"
-                  >
-                    {item.text}
-                  </h4>
-                );
-              if (item.type === "text")
-                return (
-                  <p
-                    key={index}
-                    className="text-[16px] leading-relaxed text-gray-800 text-left mb-2"
-                  >
-                    {item.text}
-                  </p>
-                );
+        {work.gallery?.map((item, index) => {
+          if (item.type === "heading")
+            return (
+              <h4
+                key={index}
+                className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left"
+              >
+                {item.text}
+              </h4>
+            );
 
-              if (item.type === "video") {
-                return (
-                  <div
-                    key={index}
-                    className="w-full mb-6 max-sm:mb-4 text-left"
-                  >
-                    <div
-                      onMouseEnter={(e) => {
-                        if (isMobile) return;
-                        setIsGalleryHovered(true);
-                        const v = e.currentTarget.querySelector("video");
-                        if (v) v.play().catch(() => {});
-                      }}
-                      onMouseLeave={(e) => {
-                        if (isMobile) return;
-                        setIsGalleryHovered(false);
-                        const v = e.currentTarget.querySelector("video");
-                        if (v) {
-                          v.pause();
-                          v.currentTime = 0;
-                        }
-                      }}
-                      onMouseMove={(e) => {
-                        if (isMobile) return;
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        setGalleryCoords({
-                          x:
-                            x > rect.width * 0.16 && x < rect.width * 0.84
-                              ? x
-                              : -10,
-                          y,
-                        });
-                      }}
-                      className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none group"
-                    >
-                      {item.img && (
-                        <img
-                          src={item.img}
-                          alt="Preview"
-                          className={
-                            isMobile
-                              ? "relative w-full h-auto px-4 rounded-2xl"
-                              : "absolute top-1/2 left-1/2 w-[68%] h-full -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none"
-                          }
-                        />
-                      )}
-                      {!isMobile && isGalleryHovered && (
-                        <>
-                          <canvas
-                            ref={(c) => {
-                              if (c) {
-                                /* Логика рендера канваса */
-                              }
-                            }}
-                            className="absolute inset-0 w-full h-full z-10 pointer-events-none"
-                          />
-                          <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none" />
-                          <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none" />
-                        </>
-                      )}
-                      {!isMobile && (
-                        <video
-                          src={item.video}
-                          playsInline
-                          muted={isMuted}
-                          className="fixed top-0 left-0 w-px h-px opacity-0 -z-50"
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              }
-              if (item.type === "image")
-                return (
-                  <ImageWithSkeleton
-                    key={index}
-                    src={item.src}
-                    className="w-full h-auto rounded-md mb-6"
+          if (item.type === "text")
+            return (
+              <p
+                key={index}
+                className="text-[16px] leading-relaxed text-gray-800 text-left mb-2"
+              >
+                {item.text}
+              </p>
+            );
+
+          if (item.type === "video") {
+            return (
+              <div key={index} className="w-full mb-6 text-left">
+                <div
+                  onMouseEnter={() => {
+                    if (!isMobile)
+                      videoRefs.current[index]?.play().catch(() => {});
+                  }}
+                  onMouseLeave={() => {
+                    if (!isMobile && videoRefs.current[index]) {
+                      videoRefs.current[index].pause();
+                      videoRefs.current[index].currentTime = 0;
+                    }
+                  }}
+                  className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] sm:cursor-none"
+                >
+                  {item.img && (
+                    <img
+                      src={item.img}
+                      alt="Preview"
+                      className="w-full h-auto"
+                    />
+                  )}
+                  <video
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    src={item.video}
+                    playsInline
+                    muted
+                    className="hidden"
                   />
-                );
-              return null;
-            })}
-          </div>
-        )}
+                </div>
+              </div>
+            );
+          }
+
+          if (item.type === "image")
+            return (
+              <ImageWithSkeleton
+                key={index}
+                src={item.src}
+                className="w-full h-auto rounded-md mb-6"
+              />
+            );
+
+          return null;
+        })}
       </div>
     </div>
   );
