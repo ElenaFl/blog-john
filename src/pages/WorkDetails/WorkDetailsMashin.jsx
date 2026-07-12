@@ -125,27 +125,26 @@ export const WorkDetailsMashin = ({ work }) => {
 
           if (item.type === "video") {
             return (
-              <div key={index} className="w-full flex mb-10 max-sm:mb-6">
+              <div key={index} className="max-w-3xl flex mb-10 max-sm:mb-6">
                 {/* max-w-3xl — ограничение ширины
          aspect-video (16/9) — держит пропорции, чтобы не было скачков
          mx-auto — если нужно по центру, или уберите для выравнивания по левому краю
       */}
-                <div className="relative w-full max-w-3xl aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] group shadow-sm">
+                <div className="relative max-w-3xl aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] group shadow-sm">
                   {/* Картинка: всегда заполняет контейнер */}
                   <img
                     src={item.img}
                     alt="Preview"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                   />
 
                   {/* Видео: проявляется при наведении */}
                   <video
                     ref={(el) => (videoRefs.current[index] = el)}
                     src={item.video}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-2xl"
                     playsInline
                     muted
-                    loop
                     onMouseEnter={(e) => {
                       if (!isMobile && !isTouchDevice) {
                         e.target.play().catch(() => {});
