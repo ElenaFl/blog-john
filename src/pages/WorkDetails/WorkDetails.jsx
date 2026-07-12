@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // Импортируем наш умный загрузчик картинок с плавным скелетоном
-import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton.jsx";
+import { ImageWithSkeleton } from "../../components/ui/ImageWithSkeleton/ImageWithSkeleton";
 
 export const WorkDetails = () => {
   const { id } = useParams();
@@ -60,8 +60,7 @@ export const WorkDetails = () => {
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const apiUrl =
-          import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://john-back-elenafl.amvera.io";
         const response = await fetch(`${apiUrl}/api/works/${id}`);
         if (!response.ok) throw new Error("Ошибка загрузки");
         const data = await response.json();
@@ -83,11 +82,7 @@ export const WorkDetails = () => {
 
     if (showMainVideo) {
       video.muted = isMuted;
-      video
-        .play()
-        .catch((err) =>
-          console.log("Автоплей главного видео заблокирован:", err),
-        );
+      video.play().catch((err) => console.log("Автоплей главного видео заблокирован:", err));
     } else {
       video.pause();
       video.currentTime = 0;
@@ -101,11 +96,7 @@ export const WorkDetails = () => {
 
     if (showGalleryVideo) {
       video.muted = isMuted;
-      video
-        .play()
-        .catch((err) =>
-          console.log("Автоплей видео галереи заблокирован:", err),
-        );
+      video.play().catch((err) => console.log("Автоплей видео галереи заблокирован:", err));
     } else {
       video.pause();
       video.currentTime = 0;
@@ -127,10 +118,7 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -158,10 +146,7 @@ export const WorkDetails = () => {
     let animationFrameId;
     const render = () => {
       if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 360;
       }
@@ -208,10 +193,7 @@ export const WorkDetails = () => {
   // Безопасный разбор галереи и тегов проекта
   let galleryImages = [];
   try {
-    galleryImages =
-      typeof work.gallery === "string"
-        ? JSON.parse(work.gallery)
-        : work.gallery || [];
+    galleryImages = typeof work.gallery === "string" ? JSON.parse(work.gallery) : (work.gallery || []);
   } catch (e) {
     console.error("Ошибка парсинга галереи проекта:", e);
   }
@@ -219,8 +201,8 @@ export const WorkDetails = () => {
   const tagsArray = Array.isArray(work.tags)
     ? work.tags
     : typeof work.tags === "string"
-      ? JSON.parse(work.tags || "[]")
-      : [];
+    ? JSON.parse(work.tags || "[]")
+    : [];
 
   // ИСПРАВЛЕНИЕ: Превращаем теги в сплошную строку с защитой от двойных решеток
   const formattedTags = tagsArray
@@ -248,14 +230,18 @@ export const WorkDetails = () => {
 
         {/* ===================================================================
             ИСПРАВЛЕНИЕ: Дата обернута в красивый черный овал с белым текстом, 
-            а теги слиты в сплошную строку мягкого серого цвета (text-gray-400)
+            между датой и тегами добавлен аккуратный серый разделитель "|",
+            а сами теги слиты в строку мягкого серого цвета (text-gray-400).
             =================================================================== */}
         <div className="w-full sm:w-fit flex flex-wrap gap-4 items-center mb-8">
           {/* Дата-капсула */}
           <span className="px-3 py-1 bg-[#1A1A1A] rounded-3xl text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider flex items-center justify-center shrink-0">
             {work.date}
           </span>
-
+          
+          {/* Разделитель "|" (скрывается на мобильных для красоты адаптива) */}
+          <span className="hidden sm:inline text-gray-300">|</span>
+          
           {/* Серая строка тегов */}
           <span className="text-[15px] sm:text-[17px] text-gray-400 font-medium tracking-wide">
             {formattedTags}
@@ -268,9 +254,7 @@ export const WorkDetails = () => {
           onMouseLeave={() => setIsMainHovered(false)}
           onMouseMove={handleMainMouseMove}
           className={`relative w-full aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200/40 bg-gray-100 ${
-            work.detailVideoSrc && !isTouchDevice
-              ? "cursor-none"
-              : "cursor-pointer"
+            work.detailVideoSrc && !isTouchDevice ? "cursor-none" : "cursor-pointer"
           }`}
         >
           <ImageWithSkeleton
@@ -352,10 +336,7 @@ export const WorkDetails = () => {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {galleryImages.map((imagePath, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video"
-                >
+                <div key={idx} className="rounded-2xl overflow-hidden border border-gray-200/40 aspect-video">
                   <ImageWithSkeleton
                     src={imagePath}
                     alt={`Галерея ${idx + 1}`}
@@ -395,7 +376,7 @@ export const WorkDetails = () => {
                     style={{
                       left: `${galleryCoords.x}px`,
                       top: `${galleryCoords.y}px`,
-                    }}
+                }}
                   >
                     <div className="w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>
                   </div>

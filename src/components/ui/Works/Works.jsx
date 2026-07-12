@@ -46,7 +46,7 @@ export const Works = () => {
     const fetchWorks = async () => {
       try {
         const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await fetch(`${baseUrl}/api/posts`);
+        const response = await fetch(`${baseUrl}/api/works`);
         if (!response.ok) {
           throw new Error("Ошибка загрузки данных");
         }
