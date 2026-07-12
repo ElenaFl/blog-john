@@ -7,20 +7,13 @@ export const WorkDetails = () => {
   const navigate = useNavigate();
   const [work, setWork] = useState(null);
 
-  // Определение мобильных и тач-устройств
+  const [isMobile, setIsMobile] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   // Ссылки на элементы для главного видео
   const mainVideoRef = useRef(null);
-  const mainCanvasRef = useRef(null);
   const [isMainHovered, setIsMainHovered] = useState(false);
   const [mainCoords, setMainCoords] = useState({ x: 0, y: 0 });
-
-  // Ссылки на элементы для видео в галерее
-  const galleryVideoRef = useRef(null);
-  const galleryCanvasRef = useRef(null);
-  const [isGalleryHovered, setIsGalleryHovered] = useState(false);
-  const [galleryCoords, setGalleryCoords] = useState({ x: 0, y: 0 });
 
   // Общий статус звука (синхронизирован через localStorage)
   const [isMuted, setIsMuted] = useState(() => {
@@ -28,8 +21,13 @@ export const WorkDetails = () => {
     return savedMuteStatus ? JSON.parse(savedMuteStatus) : false;
   });
 
-  // Автоматическое определение типа устройства (тач-экрана) при загрузке
   useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
     if (typeof window !== "undefined") {
       const hasTouch =
         "ontouchstart" in window ||
@@ -37,16 +35,15 @@ export const WorkDetails = () => {
         window.matchMedia("(pointer: coarse)").matches;
       setIsTouchDevice(hasTouch);
     }
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Синхронизация звука на всех плеерах страницы
   useEffect(() => {
     localStorage.setItem("video_muted", JSON.stringify(isMuted));
     if (mainVideoRef.current) mainVideoRef.current.muted = isMuted;
-    if (galleryVideoRef.current) galleryVideoRef.current.muted = isMuted;
   }, [isMuted]);
 
-  // Загрузка детальных данных работы из бэкенда Amvera
   useEffect(() => {
     const fetchWork = async () => {
       try {
@@ -63,9 +60,6 @@ export const WorkDetails = () => {
     fetchWork();
   }, [id]);
 
-  // =========================================================================
-  // УПРАВЛЕНИЕ ВИДЕО: Безопасно ловим любые ошибки прерывания (AbortError)
-  // =========================================================================
   const showMainVideo = work?.detailVideoSrc && isMainHovered && !isTouchDevice;
   useEffect(() => {
     const video = mainVideoRef.current;
@@ -87,111 +81,11 @@ export const WorkDetails = () => {
     }
   }, [showMainVideo, isMuted]);
 
-  const showGalleryVideo = work?.videoSrc && isGalleryHovered && !isTouchDevice;
-  useEffect(() => {
-    const video = galleryVideoRef.current;
-    if (!video) return;
-
-    if (showGalleryVideo) {
-      video.muted = isMuted;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          if (err.name !== "AbortError") {
-            console.log("Автоплей видео в галерее заблокирован:", err);
-          }
-        });
-      }
-    } else {
-      video.pause();
-      video.currentTime = 0;
-    }
-  }, [showGalleryVideo, isMuted]);
-
-  // =========================================================================
-  // ВЫСОКОПРОИЗВОДИТЕЛЬНАЯ ОТРИСОВКА НА CANVAS (60 FPS)
-  // =========================================================================
-  useEffect(() => {
-    const video = mainVideoRef.current;
-    const canvas = mainCanvasRef.current;
-    if (!video || !canvas || !showMainVideo) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId;
-    const render = () => {
-      if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 360;
-      }
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    video.addEventListener("play", render);
-    if (!video.paused) render();
-
-    return () => {
-      video.removeEventListener("play", render);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [showMainVideo]);
-
-  useEffect(() => {
-    const video = galleryVideoRef.current;
-    const canvas = galleryCanvasRef.current;
-    if (!video || !canvas || !showGalleryVideo) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId;
-    const render = () => {
-      if (video.paused || video.ended) return;
-      if (
-        canvas.width !== video.videoWidth ||
-        canvas.height !== video.videoHeight
-      ) {
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 360;
-      }
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    video.addEventListener("play", render);
-    if (!video.paused) render();
-
-    return () => {
-      video.removeEventListener("play", render);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [showGalleryVideo]);
-
-  // Слежение за движением мыши (полностью выключено на тач-экранах)
-  const handleMainMouseMove = (e) => {
-    if (!isTouchDevice) {
-      setMainCoords({ x: e.clientX, y: e.clientY });
-    }
-  };
-
-  const handleGalleryMouseMove = (e) => {
-    if (!isTouchDevice) {
-      setGalleryCoords({ x: e.clientX, y: e.clientY });
-    }
-  };
-
   const toggleMute = (e) => {
     e.stopPropagation();
     setIsMuted((prev) => !prev);
   };
 
-  // Если данные еще не загружены, показываем аккуратное состояние загрузки
   if (!work) {
     return (
       <div className="text-center py-24 text-gray-400 text-sm">
@@ -224,8 +118,7 @@ export const WorkDetails = () => {
     })
     .join(" ");
 
-  // УМНЫЙ МАРКЕР: Исключаем первый ID (id === "1"),
-  // так как на первом проекте галерея нам НУЖНА.
+  // УМНЫЙ МАРКЕР: Исключаем первый ID (id === "1"), так как там галерея НУЖНА.
   const lowerTitle = work.title?.toLowerCase() || "";
   const isGirlProject =
     lowerTitle.includes("девуш") ||
@@ -235,27 +128,11 @@ export const WorkDetails = () => {
     lowerTitle.includes("арт") ||
     lowerTitle.includes("art") ||
     id === "2" ||
-    id === "3";
+    id === "3" ||
+    (id !== "1" && galleryImages.length === 0);
 
-  // Автоматические проверки наличия РЕАЛЬНОГО контента в полях базы данных
   const hasProcessContent =
     work.sectionTitle?.trim() || work.processText?.trim();
-  const hasGalleryImages = galleryImages && galleryImages.length > 0;
-  const hasGalleryVideo = work.videoSrc && work.videoSrc.trim() !== "";
-
-  // Выводим отладочный лог в консоль браузера (F12)
-  console.log("🔍 [Отладка проекта]:", {
-    id: id,
-    title: work.title,
-    isGirlProject: isGirlProject,
-    shouldApplyZoom: isGirlProject,
-    hasProcess: !!hasProcessContent,
-    hasGallery: !!hasGalleryImages,
-    hasVideo: !!hasGalleryVideo,
-  });
-
-  // Включаем зум только для проекта с девушкой
-  const shouldApplyZoom = isGirlProject;
 
   return (
     <div className="pt-12 sm:pt-36 bg-transparent">
@@ -289,89 +166,210 @@ export const WorkDetails = () => {
           </span>
         </div>
 
-        {/* Главное изображение проекта / Видео с эффектами на десктопе */}
-        <div
-          onMouseEnter={() => setIsMainHovered(true)}
-          onMouseLeave={() => setIsMainHovered(false)}
-          onMouseMove={handleMainMouseMove}
-          className={`relative w-full aspect-video rounded-2xl overflow-hidden mb-10 border border-gray-200/40 bg-gray-100 ${
-            work.detailVideoSrc && !isTouchDevice
-              ? "cursor-none"
-              : "cursor-pointer"
-          }`}
-        >
-          {/* Масштабируем внутреннее изображение, срезая черные поля */}
-          <ImageWithSkeleton
-            src={work.img}
-            alt={work.title}
-            className={`w-full h-full object-cover transition-transform duration-300 ${shouldApplyZoom ? "[&_img]:scale-[1.12]" : ""}`}
-          />
+        {/* =========================================================================
+            БЕЗУПРЕЧНЫЙ НАТИВНЫЙ ПЛЕЕР ВИДЕО С ОБРЕЗКОЙ И 3D ЛОТОСОМ
+            ========================================================================= */}
+        <div className="max-w-3xl mx-auto p-6 max-sm:p-0 mb-10 max-sm:mb-6">
+          <div
+            onMouseEnter={() => setIsMainHovered(true)}
+            onMouseLeave={() => setIsMainHovered(false)}
+            onMouseMove={(e) => {
+              if (isTouchDevice || isMobile) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const currentX = e.clientX - rect.left;
+              const currentY = e.clientY - rect.top;
 
-          {/* Интерактивные видео-эффекты (ПК) */}
-          {showMainVideo && (
-            <>
-              {/* Кастомный круглый курсор с золотым лотосом */}
-              <div
-                className="cursor-ring pointer-events-none fixed z-50 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 border border-white/60 rounded-full w-10 h-10 transition-transform duration-75 ease-out"
-                style={{
-                  left: `${mainCoords.x}px`,
-                  top: `${mainCoords.y}px`,
-                }}
-              >
-                {/* Авторский SVG золотого цветка лотоса */}
-                <svg
-                  viewBox="0 0 64 64"
-                  className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
+              // Границы лотоса: скрываем, когда он залетает на маскирующие боковые поля и низ
+              const leftBound = rect.width * 0.16;
+              const rightBound = rect.width * 0.84;
+              const bottomBound = rect.height * 0.9;
+
+              if (
+                currentX >= leftBound &&
+                currentX <= rightBound &&
+                currentY <= bottomBound
+              ) {
+                setMainCoords({ x: currentX, y: currentY });
+              } else {
+                setMainCoords({ x: -100, y: -100 });
+              }
+            }}
+            className="relative w-full aspect-video overflow-hidden rounded-md bg-[#FBFBFA] cursor-none group"
+          >
+            {isMobile ? (
+              /* НА МОБИЛЬНОМ: Только статичная качественная картинка */
+              work.img && (
+                <img
+                  src={work.img}
+                  alt={work.title}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              )
+            ) : /* НА ДЕСКТОПЕ: Прямое видео без переключений и скачков */
+            work.detailVideoSrc && work.detailVideoSrc.trim() !== "" ? (
+              <>
+                {/* Сразу отображаем видео-плеер на полный экран. 
+                      По умолчанию он стоит на паузе, показывая первый кадр (Preload) */}
+                <video
+                  ref={mainVideoRef}
+                  src={work.detailVideoSrc}
+                  playsInline
+                  muted={isMuted}
+                  preload="auto"
+                  className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-10"
+                />
+
+                {/* СЛОЙ 2 (z-20): ДЕКОРАТИВНЫЕ МАСКИ-РАМКИ ДЛЯ ОБРЕЗКИ ЧЕРНЫХ ПОЛОС И ВОДЯНОГО ЗНАКА */}
+                {isGirlProject && (
+                  <>
+                    {/* Левая маска */}
+                    <div className="absolute top-0 left-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    {/* Правая маска */}
+                    <div className="absolute top-0 right-0 bottom-0 w-[16%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                    {/* Нижняя маска (закрывает текст) */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[10%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
+                  </>
+                )}
+
+                {/* СЛОЙ 2.5 (z-25): ДЕКОРАТИВНАЯ МАСКА ИЗ INDEX.CSS */}
+                {isGirlProject && (
+                  <div className="video-corner-mask z-25 pointer-events-none" />
+                )}
+
+                {/* СЛОЙ 5 (z-50): Легендарный кастомный геометрический 3D-лотос */}
+                {isMainHovered && mainCoords.x > 0 && (
+                  <div
+                    className="floating-3d-cursor"
+                    style={{
+                      left: `${mainCoords.x}px`,
+                      top: `${mainCoords.y}px`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <div className="lotus-3d-core flex items-center justify-center">
+                      <div className="lotus-center"></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(0deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(45deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(90deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(135deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(180deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(225deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(270deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                      <div
+                        className="lotus-petal"
+                        style={{
+                          transform:
+                            "rotateZ(315deg) rotateX(-25deg) translateY(-10px) translateZ(0px)",
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Рассеивание света внизу */}
+                <div className="video-radial-scrim z-25 pointer-events-none" />
+
+                {/* СЛОЙ 4 (z-40): КНОПКА ДИНАМИКА */}
+                <button
+                  onClick={toggleMute}
+                  className="video-mute-btn absolute z-40 hover:scale-110 active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-white/20 bg-[rgba(245,158,11,0.45)] text-amber-100 p-2 rounded-full transition-all cursor-pointer flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10"
+                  style={{
+                    bottom: "32px",
+                    right: isGirlProject ? "calc(16% + 20px)" : "32px",
+                    cursor: "inherit",
+                  }}
+                  title={isMuted ? "Включить звук" : "Выключить звук"}
                 >
-                  <path
-                    d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
-                    fill="#FBBF24"
-                  />
-                  <path
-                    d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
-                    fill="#F59E0B"
-                  />
-                  <path
-                    d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
-                    fill="#F59E0B"
-                  />
-                  <path
-                    d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
-                    fill="#D97706"
-                  />
-                </svg>
-              </div>
+                  {isMuted ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l2.25-2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"
+                      />
+                    </svg>
+                  )}
+                </button>
 
-              {/* Умный холст со Smart Crop масштабированием */}
-              <canvas
-                ref={mainCanvasRef}
-                className={`absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in ${shouldApplyZoom ? "scale-[1.12]" : ""}`}
-              />
-
-              {/* Кнопка громкости */}
-              <button
-                onClick={toggleMute}
-                style={{ cursor: "inherit" }}
-                className="absolute bottom-4 right-4 z-30 text-amber-100 p-2 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center w-8 h-8 hover:scale-110 active:scale-95 shadow-md border border-white/20 bg-black/35"
-              >
-                {isMuted ? "🔇" : "🔊"}
-              </button>
-            </>
-          )}
+                {/* СЛОЙ 3 (z-30): Элегантная рамка */}
+                <div className="absolute inset-0 z-30 pointer-events-none border-8 border-[#FBFBFA] rounded-md"></div>
+              </>
+            ) : (
+              /* Если десктопного видео нет, выводим изображение */
+              work.img && (
+                <img
+                  src={work.img}
+                  alt={work.title}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              )
+            )}
+          </div>
         </div>
-
-        {/* Скрытый фоновый плеер живет в DOM всегда, защищая от AbortError на уровне браузера */}
-        {work.detailVideoSrc && (
-          <video
-            ref={mainVideoRef}
-            src={work.detailVideoSrc}
-            playsInline
-            muted={isMuted}
-            className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
-          />
-        )}
 
         {/* Краткое описание проекта */}
         <div
@@ -402,7 +400,7 @@ export const WorkDetails = () => {
         )}
 
         {/* Слайдер-галерея изображений проекта */}
-        {!isGirlProject && hasGalleryImages && (
+        {!isGirlProject && galleryImages.length > 0 && (
           <div className="space-y-6 mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">
               Project Gallery
@@ -422,81 +420,6 @@ export const WorkDetails = () => {
               ))}
             </div>
           </div>
-        )}
-
-        {/* Дополнительное видео в галерее */}
-        {!isGirlProject && hasGalleryVideo && (
-          <div className="mb-12 border-t border-gray-200/40 pt-10 animate-fade-in">
-            <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">
-              Interactive Preview
-            </h4>
-            <div
-              onMouseEnter={() => setIsGalleryHovered(true)}
-              onMouseLeave={() => setIsGalleryHovered(false)}
-              onMouseMove={handleGalleryMouseMove}
-              className={`relative w-full aspect-video rounded-2xl overflow-hidden border border-gray-200/40 bg-gray-100 ${
-                !isTouchDevice ? "cursor-none" : "cursor-pointer"
-              }`}
-            >
-              <ImageWithSkeleton
-                src={galleryImages[0] || work.img}
-                alt="Превью видео"
-                className="w-full h-full object-cover"
-              />
-
-              {showGalleryVideo && (
-                <>
-                  {/* Курсор-лотос для галерейного видео */}
-                  <div
-                    className="cursor-ring pointer-events-none fixed z-50 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 border border-white/60 rounded-full w-10 h-10 transition-transform duration-75 ease-out"
-                    style={{
-                      left: `${galleryCoords.x}px`,
-                      top: `${galleryCoords.y}px`,
-                    }}
-                  >
-                    <svg
-                      viewBox="0 0 64 64"
-                      className="w-7 h-7 text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.55)] animate-pulse"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M32 12C32 12 25 24 32 44C39 24 32 12 32 12Z"
-                        fill="#FBBF24"
-                      />
-                      <path
-                        d="M32 20C24 22 18 32 26 44C34 44 32 20 32 20Z"
-                        fill="#F59E0B"
-                      />
-                      <path
-                        d="M32 20C40 22 46 32 38 44C30 44 32 20 32 20Z"
-                        fill="#F59E0B"
-                      />
-                      <path
-                        d="M16 44C16 44 24 48 32 48C40 48 48 44 48 44C48 44 40 42 32 42C24 42 16 44 16 44Z"
-                        fill="#D97706"
-                      />
-                    </svg>
-                  </div>
-
-                  <canvas
-                    ref={galleryCanvasRef}
-                    className="absolute top-0 left-0 w-full h-full object-cover z-20 pointer-events-none animate-fade-in"
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Скрытый фоновый плеер для видео в галерее, живет в DOM всегда */}
-        {work.videoSrc && (
-          <video
-            ref={galleryVideoRef}
-            src={work.videoSrc}
-            playsInline
-            muted={isMuted}
-            className="fixed top-0 left-0 w-px h-px opacity-0 pointer-events-none -z-50"
-          />
         )}
 
         {/* Ссылка на проект (живой сайт) */}
