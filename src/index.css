@@ -130,7 +130,7 @@ video {
   animation: spinLotus 8s linear infinite;
 }
 
-/* Элегантное 3D-вращение лотоса по осям */
+/* 3D-вращение лотоса по осям */
 @keyframes spinLotus {
   0% { transform: rotateX(25deg) rotateY(0deg) rotateZ(0deg); }
   100% { transform: rotateX(25deg) rotateY(0deg) rotateZ(360deg); }
@@ -158,67 +158,42 @@ video {
   box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
 }
 
-/* Ультра-нежная радиальная маска-дымка для низа видео */
-.video-radial-scrim {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1%; /* Возвращаем ваши 14% для мягкого рассеивания волны */
-  background: radial-gradient(circle at bottom right, rgba(255, 230, 204, 0.25) 0%, rgba(255, 230, 204, 0.05) 50%, rgba(255, 230, 204, 0) 100%);
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-}
-
-
-/* Элегантная парящая кнопка управления звуком на видео */
+/* Парящая кнопка управления звуком на видео */
 .video-mute-btn {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
 }
 
-
-/* 1. Уменьшаем внешний контейнер летающего кубика с 40px до 30px */
+/* 3D Куб */
 .gallery-3d-cube-container {
   position: absolute;
+  perspective: 600px;
+  width: 28px;
+  height: 28px;
   z-index: 50;
-  width: 30px;
-  height: 30px;
-  perspective: 400px;
+  transform: translate(-50%, -50%); /* Центрирование курсора */
 }
 
-/* 2. Сжимаем само вращающееся ядро с w-6/h-6 до аккуратных 16 пикселей */
 .cube-3d-core {
+  width: 100%;
+  height: 100%;
   position: relative;
-  width: 16px;
-  height: 16px;
   transform-style: preserve-3d;
-  animation: rotate3DBox 4s linear infinite;
 }
 
-/* 3. Корректируем 3D-вынос граней куба (translateZ) под новые размеры */
+/* Ваши стили граней */
 .cube-face {
   position: absolute;
   width: 100%;
   height: 100%;
   background: rgba(220, 38, 6, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 4px rgba(255, 0, 0, 0.5); /* чуть уменьшили внутреннюю тень ребер */
+  box-shadow: inset 0 0 4px rgba(255, 0, 0, 0.5);
 }
 
-
-/* Безупречное непрерывное вращение кубика по всем осям */
-@keyframes rotate3DBox {
-  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
-}
-
-
-/* Интегрированная маска-свечение под кнопкой динамика в галерее */
+/* Свечение кнопки */
 .gallery-mute-mask-desktop {
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   background: radial-gradient(circle, rgba(234, 179, 8, 0.95) 0%, rgba(234, 179, 8, 0.7) 40%, rgba(234, 179, 8, 0) 70%);
-  transform: translate(15px, 15px);
 }
 
 .cursor-ring {

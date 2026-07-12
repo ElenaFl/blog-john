@@ -24,6 +24,10 @@ export const WorkDetailsMashin = ({ work }) => {
   // Cостояние для отслеживания наведения на  видео
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
+  //  Состояния для координат и звука:
+  const [galleryCoords, setGalleryCoords] = useState({ x: -100, y: -100 });
+  const [isMuted, setIsMuted] = useState(true);
+
   // 2. Эффект только для подписки на изменения
   useEffect(() => {
     const handleResize = () => {
@@ -106,31 +110,89 @@ export const WorkDetailsMashin = ({ work }) => {
                 className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
                 <div
-                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden bg-[#FBFBFA]"
+                  className="relative w-full sm:w-[600px] aspect-video overflow-hidden rounded-2xl bg-[#FBFBFA] shadow-sm cursor-none group"
                   onMouseEnter={() => !isMobile && setHoveredIndex(index)}
-                  onMouseLeave={() => !isMobile && setHoveredIndex(null)}
+                  onMouseLeave={() => {
+                    !isMobile && setGalleryCoords({ x: -100, y: -100 });
+                    !isMobile && setHoveredIndex(null);
+                  }}
+                  onMouseMove={(e) => {
+                    if (isMobile) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setGalleryCoords({
+                      x: e.clientX - rect.left,
+                      y: e.clientY - rect.top,
+                    });
+                  }}
                 >
                   {/* Картинка как фон */}
                   <img
                     src={item.img}
                     alt="Preview"
-                    className="absolute inset-0 w-full h-full object-cover z-0"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  {/* Видео */}
+                  {/* Видео-плеер (используем логику VideoPlayer из прошлого ответа) */}
                   <VideoPlayer
                     src={item.video}
-                    shouldPlay={isHovered}
-                    isMuted={true}
-                    isGirlProject={isGirlProject}
+                    shouldPlay={hoveredIndex === index}
+                    isMuted={isMuted}
                   />
 
-                  {/* ПЛАШКИ (12% по бокам) */}
-                  {isGirlProject && (
-                    <>
-                      <div className="absolute top-0 left-0 bottom-0 w-[12%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                      <div className="absolute top-0 right-0 bottom-0 w-[12%] bg-[#FBFBFA] z-20 pointer-events-none"></div>
-                    </>
+                  {/* КАСТОМНЫЙ КУБИК (Курсор) */}
+                  {hoveredIndex === index && galleryCoords.x > 0 && (
+                    <div
+                      className="gallery-3d-cube-container pointer-events-none"
+                      style={{ left: galleryCoords.x, top: galleryCoords.y }}
+                    >
+                      <div
+                        className="cube-3d-core"
+                        style={{ animation: "rotate3DBox 4s infinite linear" }}
+                      >
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(0deg) translateZ(14px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(90deg) translateZ(14px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(180deg) translateZ(14px)",
+                          }}
+                        />
+                        <div
+                          className="cube-face"
+                          style={{
+                            transform: "rotateY(-90deg) translateZ(14px)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* КНОПКА ДИНАМИКА со стилем свечения */}
+                  {!isMobile && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMuted(!isMuted);
+                      }}
+                      className="absolute bottom-4 right-4 z-40 p-2 rounded-full border border-white/20 transition-all hover:scale-110"
+                    >
+                      {/* Слой свечения */}
+                      <div className="gallery-mute-mask-desktop absolute inset-0 rounded-full" />
+                      {/* Иконка */}
+                      <span className="relative z-10">
+                        {isMuted ? "🔇" : "🔊"}
+                      </span>
+                    </button>
                   )}
                 </div>
               </div>
