@@ -124,55 +124,36 @@ export const WorkDetailsMashin = ({ work }) => {
           // }
 
           if (item.type === "video") {
-            const isHovered = !!hoveredVideos[index];
-
             return (
               <div
                 key={index}
-                className="w-full mb-10 max-sm:mb-6 flex justify-center"
+                className="w-full flex justify-center mb-10 max-sm:mb-6"
               >
-                {/* Убрали aspect-video. Теперь контейнер будет подстраиваться под контент.
-        Добавили 'w-full' и 'max-w-3xl' для ширины.
-      */}
-                <div
-                  onMouseEnter={() => {
-                    if (!isMobile && !isTouchDevice) {
-                      setHoveredVideos((prev) => ({ ...prev, [index]: true }));
-                      videoRefs.current[index]?.play().catch(() => {});
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (!isMobile && !isTouchDevice) {
-                      setHoveredVideos((prev) => ({ ...prev, [index]: false }));
-                      if (videoRefs.current[index]) {
-                        videoRefs.current[index].pause();
-                        videoRefs.current[index].currentTime = 0;
+                <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#FBFBFA]">
+                  <video
+                    // Передаем ссылку на видео
+                    src={item.video}
+                    // Постер — это ваша картинка. Браузер сам растянет её по размерам видео
+                    poster={item.img}
+                    // Настройки воспроизведения
+                    playsInline
+                    muted
+                    loop
+                    preload="metadata"
+                    // Логика событий:
+                    onMouseEnter={(e) => {
+                      if (!isMobile && !isTouchDevice)
+                        e.target.play().catch(() => {});
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isMobile && !isTouchDevice) {
+                        e.target.pause();
+                        e.target.currentTime = 0;
                       }
-                    }
-                  }}
-                  // Фиксируем высоту через aspect-ratio, но берем пропорции видео (например, 16/9)
-                  // Если видео 16:9, напишите 16/9. Если другое — укажите точное.
-                  className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#FBFBFA] cursor-pointer shadow-sm"
-                  style={{ aspectRatio: "16 / 9" }}
-                >
-                  {/* Картинка: object-cover обрежет лишние края, чтобы она идеально легла в 16/9 */}
-                  <img
-                    src={item.img}
-                    alt="Preview"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-100"}`}
+                    }}
+                    // Классы для внешнего вида
+                    className="w-full h-auto block object-cover"
                   />
-
-                  {/* Видео: object-cover заставит его растянуться на 16/9 без черных полос */}
-                  {!isMobile && !isTouchDevice && (
-                    <video
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      src={item.video}
-                      playsInline
-                      muted
-                      loop
-                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}
-                    />
-                  )}
                 </div>
               </div>
             );
