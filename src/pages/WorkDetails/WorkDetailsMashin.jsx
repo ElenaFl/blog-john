@@ -157,8 +157,8 @@ export const WorkDetailsMashin = ({ work }) => {
                         transform: "translate(-50%, -50%)",
                       }}
                     >
+                      {/* Анимация подхватится автоматически из CSS-класса */}
                       <div className="cube-3d-core">
-                        {/* Все translateZ строго 10px (половина размера грани 20px) */}
                         <div
                           className="cube-face"
                           style={{
@@ -209,7 +209,7 @@ export const WorkDetailsMashin = ({ work }) => {
                       className="video-mute-btn absolute z-40 p-2.5 rounded-full flex items-center justify-center w-10 h-10 cursor-pointer"
                       style={{
                         bottom: isGirlProject ? "20px" : "20px",
-                        right: isGirlProject ? "46px" : "46px",
+                        right: isGirlProject ? "66px" : "66px",
                       }}
                       title={isMuted ? "Включить звук" : "Выключить звук"}
                     >
