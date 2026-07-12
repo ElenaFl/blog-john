@@ -57,14 +57,14 @@ export const WorkDetailsMashin = ({ work }) => {
 
         {work.gallery?.map((item, index) => {
           if (item.type === "heading")
-            return <h4 key={index} className="text-xl sm:text-2xl text-black font-bold mt-6 mb-2 text-left">{item.text}</h4>;
+            return <h4 key={index} className="text-xl sm:text-2xl font-bold mt-6 mb-4 text-left">{item.text}</h4>;
           
           if (item.type === "text")
-            return <p key={index} className="text-[16px] leading-relaxed text-gray-800 text-left mb-2">{item.text}</p>;
+            return <p key={index} className="text-[18px] sm:text-[20px] leading-relaxed  t mb-4">{item.text}</p>;
 
           if (item.type === "video") {
             return (
-              <div key={index} className="w-full mb-6 text-left">
+              <div key={index} className="w-full rounded-2xl mb-6">
                 <div
                   onMouseEnter={() => {
                     if (!isMobile && !isTouchDevice) videoRefs.current[index]?.play().catch(() => {});
