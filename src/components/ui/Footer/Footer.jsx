@@ -14,12 +14,7 @@ export const Footer = () => {
               alt="Instagram"
               className="w-[18px] h-[18px] sm:w-[24px] sm:h-[24px] object-cover"
             />
-          </a>
-          <img
-            src="/images/gerb.png"
-            alt="gerb"
-            className="w-[20px] h-[20px] sm:w-[26px] sm:h-[26px] object-cover"
-          />
+          </a>         
           <a
             href="https://github.com"
             target="_blank"
